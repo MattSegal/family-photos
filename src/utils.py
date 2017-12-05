@@ -86,3 +86,5 @@ def gunzip_file(file_obj):
         shutil.copyfileobj(gz, file_obj_uncompressed)
     file_obj_uncompressed.seek(0)
     return file_obj_uncompressed
+
+

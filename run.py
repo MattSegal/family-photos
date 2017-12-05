@@ -1,10 +1,18 @@
 import os
 import json
+import logging
+
+logging.basicConfig()
+
+with open('secrets.json', 'r') as f:
+    env_vars = json.load(f)
+    for k, v in env_vars.items():
+        os.environ[str(k)] = str(v)
 
 with open('zappa_settings.json', 'r') as f:
     env_vars = json.load(f)['dev']['environment_variables']
-    os.environ['PHOTO_BUCKET_NAME'] = env_vars['PHOTO_BUCKET_NAME']
-    os.environ['WEBSITE_BUCKET_NAME'] = env_vars['WEBSITE_BUCKET_NAME']
+    for k, v in env_vars.items():
+        os.environ[str(k)] = str(v)
 
 from src.app import app
 

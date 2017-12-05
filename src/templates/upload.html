@@ -1,0 +1,15 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div id="upload-controls">
+        <p id="status">Select image(s) to upload</p>
+        <input type="file" multiple id="file-input">
+    </div>
+    <div id="upload-list"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{url_for('static', filename='js/upload.js')}}"></script>
+{% endblock %}

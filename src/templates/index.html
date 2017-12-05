@@ -1,0 +1,9 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+<div class="images">
+{% for image_url in image_urls %}
+<img height="{{image_height}}px" src="{{image_url}}" />
+{% endfor%}
+</div>
+{% endblock %}
