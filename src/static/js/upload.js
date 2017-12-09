@@ -1,4 +1,6 @@
 // TODO: Check if file is already uploaded via API
+
+// TODO - do this with regex
 SIGN_URL = window.location.pathname.includes('/dev/')
   ? '/dev/api/sign'
   : '/api/sign'
@@ -20,6 +22,7 @@ fileInput.onchange = () => {
 }
 
 
+// TODO: upload queue?
 class ImageUploader {
 
   constructor(files) {
@@ -29,7 +32,9 @@ class ImageUploader {
     
     this.imageUploads = []
     this.signedImageCount = 0
+    this.uploadingImageCount = 0
     this.uploadedImageCount = 0
+    this.failedImageCount = 0
     
     // Ensure files selected
     this.setState(STATES.SELECT)
@@ -47,14 +52,40 @@ class ImageUploader {
   onSignatureFetched() {
     this.signedImageCount += 1
     if (this.signedImageCount === this.imageUploads.length) {
+      this.downloadImages(2)
       this.setState(STATES.UPLOADING)
-      this.imageUploads.forEach(i => i.upload(this.onUploadFinished.bind(this)))
+    }
+  }
+
+  downloadImages(count) {
+    if (this.imageUploads.length < 1) {
+      return
+    }
+    for (let i = 0; i < count; i++) {
+      const img = this.imageUploads.pop()
+      if (!img) continue
+      img.upload(this.onUploadFinished.bind(this), this.onUploadFailed.bind(this))
+      this.uploadingImageCount += 1
     }
   }
 
   onUploadFinished() {
     this.uploadedImageCount += 1
-    if (this.uploadedImageCount === this.imageUploads.length) {
+    this.uploadingImageCount -= 1
+    this.checkFinished()
+  }
+
+  onUploadFailed() {
+    this.failedImageCount += 1
+    this.uploadingImageCount -= 1
+    this.checkFinished()
+  }
+
+  checkFinished() {
+    this.downloadImages(1)
+    this.updateStatus('Uploading images...', true)
+    const numFinished = this.uploadedImageCount + this.failedImageCount 
+    if (numFinished === this.imageUploads.length) {
       this.setState(STATES.UPLOADED)
     }
   }
@@ -63,20 +94,31 @@ class ImageUploader {
     this.state = state
     switch(state) {
         case STATES.SIGNATURE:
-            this.statusEl.innerText = 'Preparing images for upload...'
+            this.updateStatus('Preparing images for upload...', true)
             break
         case STATES.UPLOADING:
-            this.statusEl.innerText = 'Uploading images...'
+            this.updateStatus('Uploading images...', true)
             break
         case STATES.UPLOADED:
-            this.statusEl.innerText = 'Upload finished'
+            this.updateStatus('Upload finished', true)
+
             break
         case STATES.SELECT:
         default:
-          this.statusEl.innerText = 'Select image(s) to upload'
+          this.updateStatus('Select image(s) to upload', false)
           for (let idx = 0; idx < this.uploadListEl.children.length; idx++) {
             this.uploadListEl.removeChild(this.uploadListEl.children[idx])
           }
+    }
+  }
+
+  updateStatus(msg, showCounts) {
+    this.statusEl.innerHTML = '<p><strong>'+msg+'</strong></p>'
+    if (showCounts) {
+      this.statusEl.innerHTML += '<p>Pending: '+this.imageUploads.length+'</p>'
+      this.statusEl.innerHTML += '<p>Uploading: '+this.uploadingImageCount+'</p>'
+      this.statusEl.innerHTML += '<p>Uploaded: '+this.uploadedImageCount+'</p>'
+      this.statusEl.innerHTML += '<p>Failed: '+this.failedImageCount+'</p>'
     }
   }
 }
@@ -92,8 +134,7 @@ class ImageUpload {
     this.divEl = document.createElement("div")
     this.divEl.classList.add('upload-image')
     this.paraEl = document.createElement("p")
-    this.paraEl.style.color = 'orange'
-    this.paraEl.innerText = 'Requesting upload...'
+    this.pendingMessage('Requesting upload...')
 
     this.imageEl = new Image()
     this.imageEl.height = 140
@@ -109,8 +150,7 @@ class ImageUpload {
     const xhr = new XMLHttpRequest()
     const onFail = () => {
       console.warn('Signature request failure for ', this.file.name, xhr.status, xhr.responseText)
-      this.paraEl.style.color = 'red'
-      this.paraEl.innerText = 'Upload not approved'
+      this.failMessage('Upload not approved')
       callback()
     }
     const onSuccess = () => {
@@ -122,8 +162,7 @@ class ImageUpload {
       const response = JSON.parse(xhr.responseText)
       this.s3Url = response.url
       this.s3SignatureData = response.data
-      this.paraEl.style.color = 'green'
-      this.paraEl.innerText = 'Upload approved'
+      this.pendingMessage('Upload approved, waiting...')
       callback()
     }
     
@@ -139,15 +178,15 @@ class ImageUpload {
     xhr.send()
   }
 
-  upload(callback) {
+  upload(successCallback, failCallBack) {
     this.paraEl.style.color = 'orange'
+    this.divEl.style.order = '-1'
     this.paraEl.innerText = 'Uploading image...'
     const xhr = new XMLHttpRequest()
     const onFail = () => {
       console.warn('File upload failure for ', this.file.name, xhr.status, xhr.responseText)
-      this.paraEl.style.color = 'red'
-      this.paraEl.innerText = 'Upload failed :('
-      callback()
+      this.failMessage('Upload failed :(')
+      failCallBack()
     }
     const onSuccess = () => {
       if (xhr.status !== 200 && xhr.status !== 204) {
@@ -155,9 +194,8 @@ class ImageUpload {
         return
       }
       console.warn('File upload success for ', this.file.name, xhr.status, xhr.responseText)
-      this.paraEl.style.color = 'green'
-      this.paraEl.innerText = 'Upload success :)'
-      callback()
+      this.successMessage('Upload success :)')
+      successCallback()
     }
 
     // Build and send form
@@ -171,6 +209,24 @@ class ImageUpload {
     xhr.onerror = onFail
     console.warn('Uploading', this.file.name)
     xhr.send(postData)
+  }
+
+  pendingMessage(msg) {
+      this.paraEl.innerText = msg
+      this.paraEl.style.color = 'orange'
+      this.divEl.style.order = '-1'
+  }
+
+  successMessage(msg) {
+      this.paraEl.innerText = msg
+      this.paraEl.style.color = 'green'
+      this.divEl.style.order = '0'
+  }
+
+  failMessage(msg) {
+      this.paraEl.innerText = msg
+      this.paraEl.style.color = 'red'
+      this.divEl.style.order = '1'
   }
 }
 

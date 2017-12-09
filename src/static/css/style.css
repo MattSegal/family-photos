@@ -46,7 +46,8 @@ header a {
 }
 
 #upload-list {
-
+    display: flex;
+    flex-direction: column;
 }
 
 .upload-image {
@@ -62,12 +63,13 @@ header a {
 
 #display-modal {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.8);
+    overflow: hidden;
 }
 
 #display-modal.visible {
