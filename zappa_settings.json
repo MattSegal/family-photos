@@ -7,8 +7,17 @@
         "runtime": "python2.7", 
         "s3_bucket": "zappa-izpustjy2",
         "environment_variables": {
-            "PHOTO_BUCKET_NAME": "ms-family-photos",
-            "WEBSITE_BUCKET_NAME": "ms-family-photos-website"
-        }
+            "ORIG_BUCKET_NAME": "family-photos-dev-orig",
+            "THUMB_BUCKET_NAME": "family-photos-dev-thumb"
+        },
+        "events": [{
+            "function": "src.handlers.image_upload",
+            "event_source": {
+                "arn": "arn:aws:s3:::family-photos-dev-orig",
+                "events": [
+                    "s3:ObjectCreated:*"
+                ]
+            }
+        }]
     }
 }

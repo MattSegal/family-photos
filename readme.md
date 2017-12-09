@@ -12,12 +12,12 @@ Users can:
 
 [Zappa](https://github.com/Miserlou/Zappa#about)
 
-* file upload adds file to S3, transforms file and adds to S3, then updates index
-
-
 ## Setup
 
 ```
+virtualenv env
 pip install -r requirements.txt
-zappa deploy dev
+# hack for Windows
+mkdir ./env/Lib/site-packages/pillow 
+zappa deploy/update dev
 ```

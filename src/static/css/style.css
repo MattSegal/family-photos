@@ -1,10 +1,13 @@
 html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
 }
 
 body {
     font-family: sans-serif;
+    position: relative;
 }
 
 h1 {
@@ -31,7 +34,11 @@ header a {
 .images {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: center;
+}
+
+.images img {
+    cursor: pointer;
 }
 
 #upload-controls {
@@ -47,4 +54,24 @@ header a {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.5em;
+}
+
+#display-image {
+    height: 500px;
+}
+
+#display-modal {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+#display-modal.visible {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

@@ -1,13 +1,6 @@
 import os
+import sys
 import json
-import logging
-
-logging.basicConfig()
-
-with open('secrets.json', 'r') as f:
-    env_vars = json.load(f)
-    for k, v in env_vars.items():
-        os.environ[str(k)] = str(v)
 
 with open('zappa_settings.json', 'r') as f:
     env_vars = json.load(f)['dev']['environment_variables']
@@ -15,5 +8,9 @@ with open('zappa_settings.json', 'r') as f:
         os.environ[str(k)] = str(v)
 
 from src.app import app
+from src.image import resize_image
 
-app.run(debug=True, port=80)
+if len(sys.argv) == 3 and sys.argv[1] == 'image':
+    resize_image(sys.argv[2])
+else:
+    app.run(debug=True, port=80)

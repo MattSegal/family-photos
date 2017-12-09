@@ -5,5 +5,10 @@
 {% for image_url in image_urls %}
 <img height="{{image_height}}px" src="{{image_url}}" />
 {% endfor%}
+<div id="display-modal"><img id="display-image"/><div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{url_for('static', filename='js/index.js')}}"></script>
 {% endblock %}

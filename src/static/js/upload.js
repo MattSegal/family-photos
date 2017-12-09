@@ -1,10 +1,15 @@
-UPLOAD_URL = '/api/upload'
+// TODO: Check if file is already uploaded via API
+SIGN_URL = window.location.pathname.includes('/dev/')
+  ? '/dev/api/sign'
+  : '/api/sign'
+
 
 // Uploader states
 STATES = {
   SELECT: 0,
-  UPLOADING: 1,
-  UPLOADED: 2,
+  SIGNATURE: 1,
+  UPLOADING: 2,
+  UPLOADED: 3,
 }
 
 const fileInput = document.getElementById('file-input')
@@ -23,6 +28,7 @@ class ImageUploader {
     this.uploadListEl = document.getElementById('upload-list')
     
     this.imageUploads = []
+    this.signedImageCount = 0
     this.uploadedImageCount = 0
     
     // Ensure files selected
@@ -34,8 +40,16 @@ class ImageUploader {
       this.imageUploads.push(new ImageUpload(files[idx], this.uploadListEl))
     }
 
-    // Upload each image in parallel
-    this.imageUploads.forEach(i => i.upload(this.onUploadFinished.bind(this)))
+    // Request S3 signatures for each image  
+    this.imageUploads.forEach(i => i.getSignature(this.onSignatureFetched.bind(this)))
+  }
+
+  onSignatureFetched() {
+    this.signedImageCount += 1
+    if (this.signedImageCount === this.imageUploads.length) {
+      this.setState(STATES.UPLOADING)
+      this.imageUploads.forEach(i => i.upload(this.onUploadFinished.bind(this)))
+    }
   }
 
   onUploadFinished() {
@@ -48,6 +62,9 @@ class ImageUploader {
   setState(state) {
     this.state = state
     switch(state) {
+        case STATES.SIGNATURE:
+            this.statusEl.innerText = 'Preparing images for upload...'
+            break
         case STATES.UPLOADING:
             this.statusEl.innerText = 'Uploading images...'
             break
@@ -68,10 +85,15 @@ class ImageUploader {
 class ImageUpload {
   constructor(file, uploadListEl) {
     this.file = file
+    // TODO: check file.size in bytes
+    this.s3Url = false
+    this.s3SignatureData = false
 
     this.divEl = document.createElement("div")
     this.divEl.classList.add('upload-image')
     this.paraEl = document.createElement("p")
+    this.paraEl.style.color = 'orange'
+    this.paraEl.innerText = 'Requesting upload...'
 
     this.imageEl = new Image()
     this.imageEl.height = 140
@@ -81,6 +103,40 @@ class ImageUpload {
     this.divEl.appendChild(this.paraEl)
 
     this.imageEl.src =  URL.createObjectURL(this.file)
+}
+
+  getSignature(callback) {
+    const xhr = new XMLHttpRequest()
+    const onFail = () => {
+      console.warn('Signature request failure for ', this.file.name, xhr.status, xhr.responseText)
+      this.paraEl.style.color = 'red'
+      this.paraEl.innerText = 'Upload not approved'
+      callback()
+    }
+    const onSuccess = () => {
+      if (xhr.status !== 200) {
+        onFail()
+        return
+      }
+      console.warn('Signature request success for', this.file.name)
+      const response = JSON.parse(xhr.responseText)
+      this.s3Url = response.url
+      this.s3SignatureData = response.data
+      this.paraEl.style.color = 'green'
+      this.paraEl.innerText = 'Upload approved'
+      callback()
+    }
+    
+    const qs = {
+      file_name: this.file.name,
+      file_type: this.file.type
+    }
+    const url = SIGN_URL + '?' + buildQuerystring(qs)
+    xhr.open('GET', url)
+    xhr.onload = onSuccess
+    xhr.onerror = onFail
+    console.warn('Requesting S3 upload signature for', this.file.name)
+    xhr.send()
   }
 
   upload(callback) {
@@ -105,8 +161,11 @@ class ImageUpload {
     }
 
     // Build and send form
-    xhr.open("POST", UPLOAD_URL)
+    xhr.open("POST", this.s3Url)
     const postData = new FormData()
+    for (let key in this.s3SignatureData.fields) {
+      postData.append(key, this.s3SignatureData.fields[key]);
+    }
     postData.append('file', this.file);
     xhr.onload = onSuccess
     xhr.onerror = onFail
@@ -114,3 +173,7 @@ class ImageUpload {
     xhr.send(postData)
   }
 }
+
+const buildQuerystring = qs => Object.keys(qs)
+    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(qs[key]))
+    .join('&')

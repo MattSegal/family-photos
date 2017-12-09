@@ -19,9 +19,7 @@ CONTENT_TYPES = {
     'json': 'application/json'
 }
 
-logging.basicConfig()
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 def split_file_extension(filename):
