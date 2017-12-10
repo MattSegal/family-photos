@@ -5,21 +5,16 @@ from flask import Flask, request, render_template
 from slugify import slugify
 
 import settings
-from utils import get_s3_url, split_file_extension
+import store
+from utils import split_file_extension
 
 app = Flask(__name__)
-orig_bucket = boto3.resource('s3').Bucket(settings.ORIG_BUCKET_NAME)
-thumb_bucket = boto3.resource('s3').Bucket(settings.THUMB_BUCKET_NAME)
+
 
 @app.route('/', methods=['GET'])
 def home_page():
-    image_urls = (
-        get_s3_url(img.key, thumb_bucket) for img in
-        thumb_bucket.objects.filter(Prefix='thumbnail/') if img.key != 'thumbnail/'
-    )
-
     context = {
-        'image_urls': image_urls,
+        'image_urls': store.get_thumbmail_urls(),
         'image_height': settings.THUMBNAIL_HEIGHT,
     }
 
@@ -50,21 +45,10 @@ def sign_upload_api():
         app.logger.debug('File has invalid content type: %s', file_type)
         return 'Invalid file type', 400
     
-    key = 'original/{}.{}'.format(slugify(base_name), file_extension.lower())
-
-    app.logger.debug('Signing upload to %s', key)
-    presigned_post = orig_bucket.meta.client.generate_presigned_post(
-        Bucket=orig_bucket.name,
-        Key=key,
-        Fields={"acl": "public-read", "Content-Type": file_type},
-        Conditions=[
-          {"acl": "public-read"},
-          {"Content-Type": file_type}
-        ],
-        ExpiresIn=3600
-    )
+    filename = '.'.join((slugify(base_name), file_extension.lower()))
+    signature_data = store.sign_image_upload(filename, file_type)
 
     return json.dumps({
-        'data': presigned_post,
-        'url': 'https://{}.s3-ap-southeast-2.amazonaws.com/'.format(orig_bucket.name)
+        'data': signature_data['data'],
+        'url': signature_data['url']
     })

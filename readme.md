@@ -1,5 +1,9 @@
 # Family Photos
 
+Currently at
+
+https://c1yj31x37l.execute-api.ap-southeast-2.amazonaws.com/dev/
+
 This app stores family photos in the cloud (AWS) and presents them in a static webpage.
 
 Users can:

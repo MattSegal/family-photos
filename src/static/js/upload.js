@@ -1,4 +1,6 @@
 // TODO: Check if file is already uploaded via API
+// todo - progress bar and/or upload speed
+
 
 // TODO - do this with regex
 SIGN_URL = window.location.pathname.includes('/dev/')
@@ -22,7 +24,6 @@ fileInput.onchange = () => {
 }
 
 
-// TODO: upload queue?
 class ImageUploader {
 
   constructor(files) {

@@ -1,4 +1,6 @@
 // TODO - little left and right arrows
+// todo - eagerly fetch left and right images
+
 const ESC_KEY = 27
 const LEFT_ARROW = 37
 const RIGHT_ARROW = 39
