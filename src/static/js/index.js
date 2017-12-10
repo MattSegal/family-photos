@@ -1,5 +1,4 @@
 // TODO - little left and right arrows
-// todo - eagerly fetch left and right images
 
 const ESC_KEY = 27
 const LEFT_ARROW = 37
@@ -12,14 +11,17 @@ const displayModal = document.getElementById('display-modal')
 const numImages = imgs.length
 let currentImage = 0
 
-const setDisplayImage = i => {
-    displayImage.src = imgs[i].src.replace('/thumbnail/', '/display/')
-}
 const inRange = i => i >= 0 && i < numImages
-
-const removeModal = () => {
-    displayModal.classList.remove('visible')
+const removeModal = () => displayModal.classList.remove('visible')
+const prefetchImage = url => (new Image()).src = url
+const getDisplayURL = i => imgs[i].src.replace('/thumbnail/', '/display/')
+const setDisplayImage = i => {
+    displayImage.src = getDisplayURL(i)
+    if (inRange(i - 1)) prefetchImage(getDisplayURL(i - 1))
+    if (inRange(i + 1)) prefetchImage(getDisplayURL(i + 1))
 }
+
+
 displayModal.onclick = removeModal
 document.onkeydown = (e) => {
     if (e.keyCode == ESC_KEY) {

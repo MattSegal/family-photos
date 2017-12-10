@@ -2,8 +2,13 @@
 
 {% block content %}
 <div class="images">
-{% for image_url in image_urls %}
-<img height="{{image_height}}px" src="{{image_url}}" />
+{% for image in thumbnails %}
+<img 
+    class="thumb"
+    height="{{image.height}}px"
+    width="{{image.width}}px"
+    src="{{image.thumb_url}}"
+/>
 {% endfor%}
 <div id="display-modal"><img id="display-image"/><div>
 </div>

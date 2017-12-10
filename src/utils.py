@@ -34,7 +34,7 @@ def get_content_type(filename):
     return CONTENT_TYPES.get(extension, 'text/plain')
 
 
-def upload_file_s3(filename, path, file_obj, bucket):
+def upload_file_s3(filename, file_obj, path, bucket):
     key = os.path.join(path, filename).replace('\\', '/')
     content_type = get_content_type(filename)
     log.debug('Uploading %s as %s to %s', key, content_type, bucket.name)
@@ -84,5 +84,3 @@ def gunzip_file(file_obj):
         shutil.copyfileobj(gz, file_obj_uncompressed)
     file_obj_uncompressed.seek(0)
     return file_obj_uncompressed
-
-

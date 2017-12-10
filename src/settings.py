@@ -2,6 +2,7 @@ import os
 
 ORIG_BUCKET_NAME = os.environ['ORIG_BUCKET_NAME']
 THUMB_BUCKET_NAME = os.environ['THUMB_BUCKET_NAME']
+DYNAMO_TABLE_NAME = os.environ['DYNAMO_TABLE_NAME']
 ALLOWED_EXTENSIONS = ('jpeg', 'jpg')
 ALLOWED_CONTENT_TYPES = ('image/jpeg',)
 THUMBNAIL_HEIGHT = 140  # px

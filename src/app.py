@@ -14,8 +14,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def home_page():
     context = {
-        'image_urls': store.get_thumbmail_urls(),
-        'image_height': settings.THUMBNAIL_HEIGHT,
+        'thumbnails': store.get_thumbnails(),
     }
 
     return render_template('index.html', **context)

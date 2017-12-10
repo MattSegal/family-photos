@@ -37,8 +37,10 @@ header a {
     justify-content: center;
 }
 
-.images img {
+.thumb {
     cursor: pointer;
+    margin: 5px;
+    background-color: #ddd;
 }
 
 #upload-controls {
@@ -68,7 +70,7 @@ header a {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.85);
     overflow: hidden;
 }
 
