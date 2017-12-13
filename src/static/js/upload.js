@@ -1,6 +1,6 @@
 // TODO: Check if file is already uploaded via API
 // todo - progress bar and/or upload speed
-
+// TODO - upload tags
 
 // TODO - do this with regex
 SIGN_URL = window.location.pathname.includes('/dev/')
@@ -30,13 +30,13 @@ class ImageUploader {
     // Cache DOM
     this.statusEl = document.getElementById('status')
     this.uploadListEl = document.getElementById('upload-list')
-    
+
     this.imageUploads = []
     this.signedImageCount = 0
     this.uploadingImageCount = 0
     this.uploadedImageCount = 0
     this.failedImageCount = 0
-    
+
     // Ensure files selected
     this.setState(STATES.SELECT)
     if (!files.length > 0) return
@@ -46,7 +46,7 @@ class ImageUploader {
       this.imageUploads.push(new ImageUpload(files[idx], this.uploadListEl))
     }
 
-    // Request S3 signatures for each image  
+    // Request S3 signatures for each image
     this.imageUploads.forEach(i => i.getSignature(this.onSignatureFetched.bind(this)))
   }
 
@@ -85,7 +85,7 @@ class ImageUploader {
   checkFinished() {
     this.downloadImages(1)
     this.updateStatus('Uploading images...', true)
-    const numFinished = this.uploadedImageCount + this.failedImageCount 
+    const numFinished = this.uploadedImageCount + this.failedImageCount
     if (numFinished === this.imageUploads.length) {
       this.setState(STATES.UPLOADED)
     }
@@ -140,7 +140,7 @@ class ImageUpload {
     this.imageEl = new Image()
     this.imageEl.height = 140
     this.imageEl.onload = () => uploadListEl.appendChild(this.divEl)
-    
+
     this.divEl.appendChild(this.imageEl)
     this.divEl.appendChild(this.paraEl)
 
@@ -166,7 +166,7 @@ class ImageUpload {
       this.pendingMessage('Upload approved, waiting...')
       callback()
     }
-    
+
     const qs = {
       file_name: this.file.name,
       file_type: this.file.type

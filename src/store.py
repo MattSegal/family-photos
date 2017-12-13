@@ -57,7 +57,7 @@ def save_display_image(filename, file):
     )
 
 
-def sign_image_upload(filename, file_type):
+def sign_image_upload(filename, file_type, tags):
     key = 'original/' + filename
     log.debug('Signing upload to %s', key)
     presigned_post =  orig_bucket.meta.client.generate_presigned_post(
@@ -70,6 +70,10 @@ def sign_image_upload(filename, file_type):
         ],
         ExpiresIn=3600
     )
+    table.put_item(Item={
+        'filename': filename,
+        'tags': tags
+    })
     return {
         'data': presigned_post,
         'url': 'https://{}.s3-ap-southeast-2.amazonaws.com/'.format(orig_bucket.name)

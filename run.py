@@ -12,7 +12,7 @@ from src.image import resize_image, resize_images
 
 if len(sys.argv) == 3 and sys.argv[1] == 'image':
     resize_image(sys.argv[2])
-if len(sys.argv) == 2 and sys.argv[1] == 'images':
+elif len(sys.argv) == 2 and sys.argv[1] == 'images':
     resize_images()
 else:
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=8000)

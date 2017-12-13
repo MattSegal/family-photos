@@ -21,18 +21,29 @@ const setDisplayImage = i => {
     if (inRange(i + 1)) prefetchImage(getDisplayURL(i + 1))
 }
 
+const scrollLeft = () => {
+    if (inRange(currentImage - 1)) {
+        currentImage--
+        setDisplayImage(currentImage)
+    }
+}
+const scrollRight = () => {
+    if (inRange(currentImage + 1)) {
+        currentImage++
+        setDisplayImage(currentImage)
+    }
+}
+
 
 displayModal.onclick = removeModal
 document.onkeydown = (e) => {
     if (e.keyCode == ESC_KEY) {
         removeModal()
     } else if (displayModal.classList.contains('visible')) {
-        if (e.keyCode === LEFT_ARROW && inRange(currentImage - 1)) {
-            currentImage--
-            setDisplayImage(currentImage)
-        } else if (e.keyCode === RIGHT_ARROW && inRange(currentImage + 1)) {
-            currentImage++
-            setDisplayImage(currentImage)
+        if (e.keyCode === LEFT_ARROW) {
+            scrollLeft()
+        } else if (e.keyCode === RIGHT_ARROW) {
+            scrollRight()
         }
     }
 }
@@ -43,4 +54,46 @@ for (let i = 0; i < numImages; i++) {
         currentImage = i
         setDisplayImage(i)
     }
+    const shade = Math.floor(200 + Math.random() * 55)
+    imgs[i].style.backgroundColor = 'rgb('+shade+','+shade+','+shade+')'
 }
+
+
+
+// Handle left / right swipe - thanks Stack Overflow!
+let xDown = null
+let yDown = null
+
+const handleTouchStart = e => {
+    xDown = e.touches[0].clientX
+    yDown = e.touches[0].clientY
+}
+const handleTouchMove = e => {
+    if ( ! xDown || ! yDown ) return
+    const xUp = e.touches[0].clientX
+    const yUp = e.touches[0].clientY
+
+    const xDiff = xDown - xUp
+    const yDiff = yDown - yUp
+
+    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {
+        if ( xDiff > 0 ) {
+            /* left swipe */
+            scrollRight()
+        } else {
+            /* right swipe */
+            scrollLeft()
+        }
+    } else {
+        if ( yDiff > 0 ) {
+            /* up swipe */
+        } else {
+            /* down swipe */
+        }
+    }
+    /* reset values */
+    xDown = null
+    yDown = null
+}
+document.ontouchstart = handleTouchStart
+document.ontouchmove = handleTouchMove

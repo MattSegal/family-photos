@@ -39,7 +39,6 @@ header a {
 
 .thumb {
     cursor: pointer;
-    margin: 5px;
     background-color: #ddd;
 }
 
@@ -60,7 +59,8 @@ header a {
 }
 
 #display-image {
-    height: 500px;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 #display-modal {
@@ -78,4 +78,15 @@ header a {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media (max-width: 850px) {
+    .page-wrapper {
+        padding: 0 1em;
+    }
+    .thumb {
+        /* hardcode aspect ration :( */
+        width: 150px;
+        height: 93px;
+    }
 }

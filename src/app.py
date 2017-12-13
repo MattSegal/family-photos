@@ -29,7 +29,8 @@ def upload_page():
 def sign_upload_api():
     file_name = request.args.get('file_name')
     file_type = request.args.get('file_type')
-    
+    tags = request.args.get('tags').split(',')  # comma separated list
+
     if not file_name:
         app.logger.debug('File has no name: %s', file_name)
         return 'File has no name', 400
@@ -43,9 +44,9 @@ def sign_upload_api():
     if not file_type in settings.ALLOWED_CONTENT_TYPES:
         app.logger.debug('File has invalid content type: %s', file_type)
         return 'Invalid file type', 400
-    
+
     filename = '.'.join((slugify(base_name), file_extension.lower()))
-    signature_data = store.sign_image_upload(filename, file_type)
+    signature_data = store.sign_image_upload(filename, file_type, tags)
 
     return json.dumps({
         'data': signature_data['data'],
