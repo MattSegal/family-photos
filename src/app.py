@@ -25,6 +25,37 @@ def upload_page():
     return render_template('upload.html')
 
 
+@app.route('/album', methods=['GET'])
+def album_create_page():
+    return render_template('create_album.html')
+
+
+@app.route('/api/album', methods=['POST'])
+def album_create_api():
+    name = request.args.get('name')
+
+    if not name:
+        return 'Album name must not be blank', 400
+
+    # TODO: Validate / clean name
+
+    existing_album = store.get_album(name)
+    if existing_album:
+        return json.dumps({
+            'name': name,
+            'slug': slug,
+            'created': False
+        })
+    else:
+        slug = slugify(name)
+        store.add_album(name, slug)
+        return json.dumps({
+            'name': name,
+            'slug': slug,
+            'created': True
+        })
+
+
 @app.route('/api/sign', methods=['GET'])
 def sign_upload_api():
     file_name = request.args.get('file_name')

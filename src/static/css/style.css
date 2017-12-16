@@ -1,3 +1,5 @@
+/* ===== GENERIC ===== */
+
 html, body {
     margin: 0;
     padding: 0;
@@ -31,17 +33,8 @@ header a {
     color: #000;
 }
 
-.images {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-bottom: 140px;
-}
 
-.thumb {
-    cursor: pointer;
-    background-color: #ddd;
-}
+/* ===== UPLOAD ===== */
 
 #upload-controls {
     margin-bottom: 1em
@@ -57,6 +50,31 @@ header a {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.5em;
+}
+
+#select-album {
+    margin-bottom: 1em;
+}
+
+#select-album option {
+    padding: 5px 10px;
+}
+
+#new-album-link a {
+    text-decoration: none;
+}
+
+/* ===== INDEX ===== */
+.images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 140px;
+}
+
+.thumb {
+    cursor: pointer;
+    background-color: #ddd;
 }
 
 #display-image {
@@ -86,7 +104,7 @@ header a {
         padding: 0 1em;
     }
     .thumb {
-        /* hardcode aspect ration :( */
+        /* hardcode aspect ratio for thumbnails :( */
         width: 150px;
         height: 93px;
     }

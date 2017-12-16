@@ -1,8 +1,20 @@
 // TODO: Check if file is already uploaded via API
 // todo - progress bar and/or upload speed
+
 // TODO - upload tags
+// #select-album
+// List of current album names
+// Ability to add new album
+// select album - must be done before upload
+// all files uploaded are tagged to album
+
+// home page
+// show top 12 photos from every album thumb only
+// link to album
+// album page (current index page)
 
 // TODO - do this with regex
+
 SIGN_URL = window.location.pathname.includes('/dev/')
   ? '/dev/api/sign'
   : '/api/sign'

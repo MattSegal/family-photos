@@ -8,8 +8,7 @@
         "s3_bucket": "zappa-izpustjy2",
         "environment_variables": {
             "ORIG_BUCKET_NAME": "family-photos-dev-orig",
-            "THUMB_BUCKET_NAME": "family-photos-dev-thumb",
-            "DYNAMO_TABLE_NAME": "images"
+            "THUMB_BUCKET_NAME": "family-photos-dev-thumb"
         },
         "events": [{
             "function": "src.handlers.image_upload",
