@@ -5,6 +5,7 @@ const LEFT_ARROW = 37
 const RIGHT_ARROW = 39
 const imgs = document.getElementsByTagName('img')
 
+const html = document.getElementsByTagName('html')[0]
 const displayImage = document.getElementById('display-image')
 const displayModal = document.getElementById('display-modal')
 
@@ -12,7 +13,10 @@ const numImages = imgs.length
 let currentImage = 0
 
 const inRange = i => i >= 0 && i < numImages
-const removeModal = () => displayModal.classList.remove('visible')
+const removeModal = () => {
+    html.style.overflow = 'auto'
+    displayModal.classList.remove('visible')
+}
 const prefetchImage = url => (new Image()).src = url
 const getDisplayURL = i => imgs[i].src.replace('/thumbnail/', '/display/')
 const setDisplayImage = i => {
@@ -51,6 +55,7 @@ document.onkeydown = (e) => {
 for (let i = 0; i < numImages; i++) {
     imgs[i].onclick = () => {
         displayModal.classList.add('visible')
+        html.style.overflow = 'hidden'
         currentImage = i
         setDisplayImage(i)
     }
