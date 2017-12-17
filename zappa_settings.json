@@ -1,19 +1,44 @@
 {
     "dev": {
-        "app_function": "src.app.app", 
-        "aws_region": "ap-southeast-2", 
-        "profile_name": "default", 
-        "project_name": "family-photos", 
-        "runtime": "python2.7", 
+        "app_function": "src.app.app",
+        "aws_region": "ap-southeast-2",
+        "profile_name": "default",
+        "project_name": "family-photos",
+        "runtime": "python2.7",
         "s3_bucket": "zappa-izpustjy2",
         "environment_variables": {
             "ORIG_BUCKET_NAME": "family-photos-dev-orig",
-            "THUMB_BUCKET_NAME": "family-photos-dev-thumb"
+            "THUMB_BUCKET_NAME": "family-photos-dev-thumb",
+            "IMAGE_TABLE_NAME": "images",
+            "ALBUM_TABLE_NAME": "albums"
         },
         "events": [{
             "function": "src.handlers.image_upload",
             "event_source": {
                 "arn": "arn:aws:s3:::family-photos-dev-orig",
+                "events": [
+                    "s3:ObjectCreated:*"
+                ]
+            }
+        }]
+    },
+    "prod": {
+        "app_function": "src.app.app",
+        "aws_region": "ap-southeast-2",
+        "profile_name": "default",
+        "project_name": "family-photos-prod",
+        "runtime": "python2.7",
+        "s3_bucket": "zappa-family-photos-prod",
+        "environment_variables": {
+            "ORIG_BUCKET_NAME": "family-photos-prod-orig",
+            "THUMB_BUCKET_NAME": "family-photos-prod-thumb",
+            "IMAGE_TABLE_NAME": "prod-images",
+            "ALBUM_TABLE_NAME": "prod-albums"
+        },
+        "events": [{
+            "function": "src.handlers.image_upload",
+            "event_source": {
+                "arn": "arn:aws:s3:::family-photos-prod-orig",
                 "events": [
                     "s3:ObjectCreated:*"
                 ]

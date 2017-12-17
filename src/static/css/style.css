@@ -91,6 +91,7 @@ h1.album-title {
 #display-image {
     max-height: 100%;
     max-width: 100%;
+    background-color: #ddd;
 }
 
 #display-modal {
@@ -118,5 +119,8 @@ h1.album-title {
         /* hardcode aspect ratio for thumbnails :( */
         width: 150px;
         height: 93px;
+    }
+    footer {
+        padding-bottom: 93px;
     }
 }

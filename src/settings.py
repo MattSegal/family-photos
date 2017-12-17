@@ -5,8 +5,8 @@ ORIG_BUCKET_NAME = os.environ['ORIG_BUCKET_NAME']
 THUMB_BUCKET_NAME = os.environ['THUMB_BUCKET_NAME']
 
 # DynamoDB tables
-IMAGE_TABLE_NAME = 'images'
-ALBUM_TABLE_NAME = 'albums'
+IMAGE_TABLE_NAME = os.environ['IMAGE_TABLE_NAME']
+ALBUM_TABLE_NAME = os.environ['ALBUM_TABLE_NAME']
 
 # Image properties
 ALLOWED_EXTENSIONS = ('jpeg', 'jpg')
