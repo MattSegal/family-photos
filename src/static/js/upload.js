@@ -2,9 +2,6 @@
 // todo - progress bar and/or upload speed
 
 // TODO - upload tags
-// #select-album
-// List of current album names
-// Ability to add new album
 // select album - must be done before upload
 // all files uploaded are tagged to album
 
@@ -29,12 +26,14 @@ STATES = {
 }
 
 const fileInput = document.getElementById('file-input')
+const selectInput = document.getElementById('select-album')
 
-fileInput.onchange = () => {
+const onSelect = () => {
     const files = fileInput.files
     const uploader = new ImageUploader(files)
 }
-
+fileInput.onchange = onSelect
+selectInput.onchange = onSelect
 
 class ImageUploader {
 
@@ -52,14 +51,25 @@ class ImageUploader {
     // Ensure files selected
     this.setState(STATES.SELECT)
     if (!files.length > 0) return
+
+    // Ensure album selected
+    const optionIdx = selectInput.options.selectedIndex
+    const album_slug = selectInput.options[optionIdx].value
+    if (!album_slug) {
+      this.updateStatus('Select an album first', false)
+      return
+    }
+
     this.setState(STATES.SIGNATURE)
 
     for (let idx = 0; idx < files.length; idx++) {
       this.imageUploads.push(new ImageUpload(files[idx], this.uploadListEl))
     }
+    fileInput.value = ""
 
     // Request S3 signatures for each image
-    this.imageUploads.forEach(i => i.getSignature(this.onSignatureFetched.bind(this)))
+    const callback = this.onSignatureFetched.bind(this)
+    this.imageUploads.forEach(i => i.getSignature(album_slug, callback))
   }
 
   onSignatureFetched() {
@@ -159,7 +169,7 @@ class ImageUpload {
     this.imageEl.src =  URL.createObjectURL(this.file)
 }
 
-  getSignature(callback) {
+  getSignature(album_slug, callback) {
     const xhr = new XMLHttpRequest()
     const onFail = () => {
       console.warn('Signature request failure for ', this.file.name, xhr.status, xhr.responseText)
@@ -180,6 +190,7 @@ class ImageUpload {
     }
 
     const qs = {
+      album_slug: album_slug,
       file_name: this.file.name,
       file_type: this.file.type
     }

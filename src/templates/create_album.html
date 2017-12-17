@@ -7,11 +7,20 @@
         <input type="text" name="name" placeholder="Eg. USA Trip">
         <input type="submit" value="Submit">
     </form>
-    <p id="new-album-results"></p>
-    <a href="#" id="new-album-link"></a>
+    {% if album_message %}
+        <p>{{album_message}}</p>
+    {% endif %}
+    {% if album_url %}
+        <div>
+            <a href="{{album_url}}">View album '{{album_name}}' here</a>
+        </div>
+        <div>
+            <a href="/upload">Upload photos here</a>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="{{url_for('static', filename='js/upload.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/create_album.js')}}"></script>
 {% endblock %}

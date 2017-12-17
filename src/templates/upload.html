@@ -5,9 +5,10 @@
     <div id="upload-controls">
         <p><strong>Select album</strong></p>
         <select id="select-album">
-            <option value="woo">woo</option>
-            <option value="waa">waa</option>
-            <option value="wee">wee</option>
+            <option value="">-</option>
+            {% for album in albums %}
+                <option value="{{album.slug}}">{{album.name}}</option>
+            {% endfor %}
         </select>
         <div id="new-album-link">
             <a href="/album">Create new album</a>

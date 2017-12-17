@@ -18,23 +18,45 @@ images_table = boto3.resource('dynamodb').Table(settings.IMAGE_TABLE_NAME)
 albums_table = boto3.resource('dynamodb').Table(settings.ALBUM_TABLE_NAME)
 
 
-def get_album(name):
-    import pdb;pdb.set_trace()
-    resp = albums_table.get_item(Key={'name': name})
+def get_album(slug):
+    resp = albums_table.get_item(Key={'slug': slug})
     assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
     return resp.get('Item')
 
 
-def add_album(name, slug):
+def get_albums():
+    return sorted(albums_table.scan()['Items'], key=lambda img: img['name'])
+
+
+def add_album(slug, name):
     albums_table.put_item(Item={
-        'name': name,
         'slug': slug,
+        'name': name,
         'created': int(time.time() * 1000),
     })
 
 
 def get_thumbnails():
-    return images_table.scan()['Items']
+    # UNUSED
+    return sorted(images_table.scan()['Items'], key=lambda img: img['created'])
+
+
+def get_album_thumbnails(album_slug):
+    """
+    TODO - query DynamoDB more efficiently
+    """
+    thumbs = (
+        img for img in images_table.scan()['Items']
+        if img['album_slug'] == album_slug and
+        img.get('created')
+    ) 
+    return sorted(thumbs, key=lambda img: img['created'])
+
+
+def get_image(filename):
+    resp = images_table.get_item(Key={'filename': filename})
+    assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
+    return resp.get('Item')
 
 
 def get_original_image(filename):
@@ -49,7 +71,6 @@ def get_original_image_filenames():
         if img.key != 'original/'
     )
 
-
 def save_thumbnail_image(filename, file, width, height):
     upload_file_s3(
        filename, file,
@@ -57,13 +78,21 @@ def save_thumbnail_image(filename, file, width, height):
        bucket=thumb_bucket
     )
     key = 'thumbnail/{}'.format(filename)
-    images_table.put_item(Item={
-        'filename': filename,
-        'thumb_url': get_s3_url(key, thumb_bucket),
-        'width': width,
-        'height': height,
-        'created': int(time.time() * 1000),
-    })
+    images_table.update_item(
+        Key={'filename': filename},
+        UpdateExpression=(
+            'SET thumb_url = :t,'
+            'width = :w,'
+            'height = :h,'
+            'created = :c'
+        ),
+        ExpressionAttributeValues={
+            ':t': get_s3_url(key, thumb_bucket),
+            ':w': width,
+            ':h': height,
+            ':c': int(time.time() * 1000),
+        }
+    )
 
 
 def save_display_image(filename, file):
@@ -74,7 +103,7 @@ def save_display_image(filename, file):
     )
 
 
-def sign_image_upload(filename, file_type, tags):
+def sign_image_upload(filename, file_type, album_slug):
     key = 'original/' + filename
     log.debug('Signing upload to %s', key)
     presigned_post =  orig_bucket.meta.client.generate_presigned_post(
@@ -87,10 +116,11 @@ def sign_image_upload(filename, file_type, tags):
         ],
         ExpiresIn=3600
     )
-    images_table.put_item(Item={
+    resp = images_table.put_item(Item={
         'filename': filename,
-        'tags': tags
+        'album_slug': album_slug
     })
+    assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
     return {
         'data': presigned_post,
         'url': 'https://{}.s3-ap-southeast-2.amazonaws.com/'.format(orig_bucket.name)

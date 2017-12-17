@@ -12,9 +12,10 @@ body {
     position: relative;
 }
 
-h1 {
-    text-align: center;
+footer {
+    padding-bottom: 140px;
 }
+
 
 .page-wrapper {
     max-width: 900px;
@@ -65,11 +66,21 @@ header a {
 }
 
 /* ===== INDEX ===== */
+/*TODO: image display swipe animation*/
+
+h1.album-title {
+    text-align: center;
+}
+
+.album-title a {
+    text-decoration: none;
+    color: #000;
+}
+
 .images {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding-bottom: 140px;
 }
 
 .thumb {
