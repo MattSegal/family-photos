@@ -10,12 +10,8 @@
 // link to album
 // album page (current index page)
 
-// TODO - do this with regex
-
-SIGN_URL = window.location.pathname.includes('/dev/')
-  ? '/dev/api/sign'
-  : '/api/sign'
-
+const root_path = /\/[\w]+\//g.exec(window.location.pathname)
+const SIGN_URL = root_path ? root_path + 'api/sign' : '/api/sign'
 
 // Uploader states
 STATES = {
