@@ -48,9 +48,9 @@ def get_album_thumbnails(album_slug):
     thumbs = (
         img for img in images_table.scan()['Items']
         if img['album_slug'] == album_slug and
-        img.get('created')
+        img.get('taken')
     ) 
-    return sorted(thumbs, key=lambda img: img['created'])
+    return sorted(thumbs, key=lambda img: img['taken'])
 
 
 def get_image(filename):
@@ -71,7 +71,7 @@ def get_original_image_filenames():
         if img.key != 'original/'
     )
 
-def save_thumbnail_image(filename, file, width, height):
+def save_thumbnail_image(filename, file, width, height, taken_time):
     upload_file_s3(
        filename, file,
        path='thumbnail',
@@ -84,13 +84,15 @@ def save_thumbnail_image(filename, file, width, height):
             'SET thumb_url = :t,'
             'width = :w,'
             'height = :h,'
-            'created = :c'
+            'created = :ct,'
+            'taken = :tt'
         ),
         ExpressionAttributeValues={
             ':t': get_s3_url(key, thumb_bucket),
             ':w': width,
             ':h': height,
-            ':c': int(time.time() * 1000),
+            ':ct': int(time.time() * 1000),
+            ':tt': taken_time
         }
     )
 
