@@ -25,3 +25,8 @@ pip install -r requirements.txt
 mkdir ./env/Lib/site-packages/pillow 
 zappa deploy/update dev
 ```
+
+## TODO
+
+Custom domain (memories.ninja)
+http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html
