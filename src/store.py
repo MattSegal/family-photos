@@ -58,6 +58,24 @@ def get_image(filename):
     assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
     return resp.get('Item')
 
+def delete_image(filename):
+    # Delete from DynamoDB
+    resp = images_table.delete_item(Key={'filename': filename})
+    assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
+
+    # Delete from thumbnails
+    delete = {'Objects': [
+        {'Key': 'display/' + filename},
+        {'Key': 'thumbnail/' + filename}
+    ]}
+    resp = thumb_bucket.delete_objects(Delete=delete)
+    assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
+
+    # Delete from original bucket
+    delete = {'Objects': [{'Key': 'original/' + filename}]}
+    resp = orig_bucket.delete_objects(Delete=delete)
+    assert resp['ResponseMetadata']['HTTPStatusCode'] == 200
+
 
 def get_original_image(filename):
     key = 'original/{}'.format(filename)
