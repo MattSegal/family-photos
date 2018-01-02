@@ -28,5 +28,5 @@ zappa deploy/update dev
 
 ## TODO
 
-Custom domain (memories.ninja)
-http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html
+* Download bucket contents (by album)
+
