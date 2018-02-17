@@ -22,11 +22,11 @@ Users can:
 virtualenv env
 pip install -r requirements.txt
 # hack for Windows
-mkdir ./env/Lib/site-packages/pillow 
+mkdir ./env/Lib/site-packages/pillow
 zappa deploy/update dev
 ```
 
 ## TODO
 
 * Download bucket contents (by album)
-
+* Ensure unique image names
