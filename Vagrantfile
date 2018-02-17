@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
         photos.vm.network "forwarded_port", guest: 8080, host: 8080
 
         # Mount directories
-        photos.vm.synced_folder "./photos", "/srv/app/", type: "rsync"
+        photos.vm.synced_folder "photos/", "/srv/app/"
 
         # Add public SSH key so ansible works
         photos.vm.provision "shell" do |s|

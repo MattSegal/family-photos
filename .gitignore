@@ -4,3 +4,4 @@ env/
 secrets.json
 *.sqlite3
 .vagrant
+*.log
