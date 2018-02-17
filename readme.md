@@ -10,21 +10,15 @@ Users can:
 - upload photos
 - download photos
 
-## Implementation
-
-[Zappa](https://github.com/Miserlou/Zappa#about)
-
-## Setup
-
-```
-virtualenv env
-pip install -r requirements.txt
-# hack for Windows
-mkdir ./env/Lib/site-packages/pillow
-zappa deploy/update dev
-```
 
 ## TODO
 
 * Download bucket contents (by album)
 * Ensure unique image names
+
+## Deployment
+
+/srv/app for Django app
+/srv/env for virtualenv
+/srv/static for staticfiles
+/srv/gunicorn.log for gunicorn logs

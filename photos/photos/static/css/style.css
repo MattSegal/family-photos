@@ -1,0 +1,133 @@
+/* ===== GENERIC ===== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: sans-serif;
+    position: relative;
+}
+
+footer {
+    padding-bottom: 140px;
+}
+
+
+.page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 3em;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none;
+    color: #000;
+}
+
+
+/* ===== UPLOAD ===== */
+
+#upload-controls {
+    margin-bottom: 1em
+}
+
+#upload-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-image {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+
+#select-album {
+    margin-bottom: 1em;
+}
+
+#select-album option {
+    padding: 5px 10px;
+}
+
+#new-album-link a {
+    text-decoration: none;
+}
+
+/* ===== INDEX ===== */
+/*TODO: image display swipe animation*/
+
+h1.album-title {
+    text-align: left;
+}
+
+.album-title a {
+    text-decoration: none;
+    color: #000;
+}
+
+.images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+}
+
+.thumb {
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+#display-image {
+    max-height: 100%;
+    max-width: 100%;
+    background-color: #ddd;
+}
+
+#display-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+}
+
+#display-modal.visible {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 1000px) {
+    .page-wrapper {
+        padding: 0 1em;
+        max-width: 600px;
+    }
+    .thumb {
+        /* hardcode aspect ratio for thumbnails :( */
+        width: 150px;
+        height: 93px;
+    }
+    footer {
+        padding-bottom: 93px;
+    }
+}
+
+@media (max-width: 650px) {
+    .page-wrapper {
+        max-width: 300px;
+    }
+}

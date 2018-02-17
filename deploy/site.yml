@@ -1,0 +1,104 @@
+---
+- hosts: webserver
+  remote_user: root
+  tasks:
+    - name: Test connection
+      ping:
+
+    - name: Update apt cache
+      apt: update_cache=yes
+
+    # TODO Fail2Ban
+
+    # NGINX
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+    - name: Copy nginx config
+      copy:
+        src: ./nginx/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: www-data
+        group: www-data
+        mode: 0644
+    - name: Copy website config
+      copy:
+        src: ./nginx/website
+        dest: /etc/nginx/sites-available/website
+        owner: www-data
+        group: www-data
+        mode: 0644
+    - name: Symlink website config
+      file:
+        src: /etc/nginx/sites-available/website
+        dest: /etc/nginx/sites-enabled/website
+        owner: www-data
+        group: www-data
+        state: link
+    - name: Remove default config
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+    # Postgres
+    - name: Install PostgreSQL
+      apt: name={{ item }} state=installed
+      with_items:
+        - postgresql
+        - postgresql-contrib
+        - python3-psycopg2
+        - libpq-dev
+        - python3-dev
+    - name: Setup app Postgres user
+      become: true
+      become_user: postgres
+      postgresql_user:
+        name: django
+        password: password
+    - name: Setup photos database
+      become: true
+      become_user: postgres
+      postgresql_db:
+        name: photos
+        state: present
+        owner: django
+        port: 5432
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+
+    # Folder Structure
+    - name: Root app folder
+      file:
+        state: directory
+        path: /srv
+        owner: root
+        group: root
+    - name: Django folder
+      file:
+        state: directory
+        path: /srv/app
+        owner: root
+        group: root
+    - name: Static files folder
+      file:
+        state: directory
+        path: /srv/static
+        owner: www-data
+        group: www-data
+
+    # Django app
+    - name: Install Django dependencies
+      apt: name={{ item }} state=installed
+      with_items:
+        - python3-pip
+        - python-virtualenv
+    - name: Create virtualenv with gunicorn
+      pip:
+        name: gunicorn
+        virtualenv: /srv/env
+        virtualenv_python: python3.5

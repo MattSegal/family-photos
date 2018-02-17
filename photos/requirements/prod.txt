@@ -1,0 +1,4 @@
+#Pillow
+#boto3
+django
+psycopg2
