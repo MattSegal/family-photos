@@ -19,11 +19,11 @@ function lint {
 
 function setup {
     vagrant up
-    bash -c "ansible-playbook -i ./deploy/hosts-dev ./deploy/site.yml"
+    bash -c "ansible-playbook -i ./deploy/hosts-dev ./deploy/site.yml --vault-password-file ~/.vault-pass.txt"
 }
 
 function deploy {
-    bash -c "ansible-playbook -i ./deploy/hosts-prod ./deploy/site.yml"
+    bash -c "ansible-playbook -i ./deploy/hosts-prod ./deploy/site.yml --vault-password-file ~/.vault-pass.txt"
 }
 
 function runserver {
@@ -36,6 +36,10 @@ function gunicorn {
 
 function ssh {
     vagrant ssh -c 'sudo -i'
+}
+
+function sync {
+    # sync prod/dev s3 buckets
 }
 
 function fetch {

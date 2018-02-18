@@ -10,8 +10,8 @@
 </head>
 <body>
     <header class="page-wrapper">
-        <h1><a href="/">Memories Ninja</a></h1>
-        <h2><a href="/upload/">Upload</a></h2>
+        <h1><a href="{% url 'landing' %}">Memories Ninja</a></h1>
+        <h2><a href="{% url 'upload' %}">Upload</a></h2>
     </header>
     {% block content %}
     {% endblock %}

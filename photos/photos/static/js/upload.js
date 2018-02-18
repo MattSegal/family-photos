@@ -71,7 +71,7 @@ class ImageUploader {
   onSignatureFetched() {
     this.signedImageCount += 1
     if (this.signedImageCount === this.imageUploads.length) {
-      this.downloadImages(2)
+      this.downloadImages(1)
       this.setState(STATES.UPLOADING)
     }
   }

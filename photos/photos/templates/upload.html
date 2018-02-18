@@ -12,7 +12,7 @@
             {% endfor %}
         </select>
         <div id="new-album-link">
-            <a href="/album/">Create new album</a>
+            <a href="{% url 'album-create' %}">Create new album</a>
         </div>
         <p id="status"><strong>Select image(s) to upload</strong></p>
         <input type="file" multiple id="file-input">
