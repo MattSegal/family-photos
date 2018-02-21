@@ -37,8 +37,17 @@ header a {
 
 /* ===== UPLOAD ===== */
 
-#upload-controls {
-    margin-bottom: 1em
+#upload-form {
+    margin-bottom: 1em;
+    height: 150px;
+}
+
+#upload-form.hidden,
+.file-upload.hidden,
+.progress-holder.hidden {
+    height: 0;
+    margin: 0;
+    visibility: hidden;
 }
 
 #upload-list {
@@ -53,6 +62,7 @@ header a {
     margin-bottom: 0.5em;
 }
 
+
 #select-album {
     margin-bottom: 1em;
 }
@@ -63,6 +73,40 @@ header a {
 
 #new-album-link a {
     text-decoration: none;
+}
+
+.progress-holder {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 1em;
+    position: relative;
+    background-color: #eee;
+}
+
+.upload-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    color: #fff;
+    font-weight: bold;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    transition: width 0.5s;
+    background-color: #47f7c5;
+}
+
+.progress-bar.error {
+    left: initial;
+    right: 0;
+    background-color: #ff5e5e;
 }
 
 /* ===== INDEX ===== */

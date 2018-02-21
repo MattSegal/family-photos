@@ -6,5 +6,4 @@ from photos.models import Photo
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
-        fields = ('file', )
-
+        fields = ('title', 'file', 'album')

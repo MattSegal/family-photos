@@ -1,255 +1,124 @@
-// TODO: Check if file is already uploaded via API
-// todo - progress bar and/or upload speed
+$albumSelect = $('select')
+$fileUpload = $('.file-upload')
 
-// TODO - upload tags
-// select album - must be done before upload
-// all files uploaded are tagged to album
+$uploadList = $('#upload-list')
+$uploadForm = $('#upload-form')
+$progressHolder = $('.progress-holder')
 
-// home page
-// show top 12 photos from every album thumb only
-// link to album
-// album page (current index page)
+$uploadBar = $('.progress-bar.upload')
+$uploadMessage = $('.upload-message.upload')
 
-const root_path = /\/[\w]+\//g.exec(window.location.pathname)
-const SIGN_URL = root_path ? root_path + 'api/sign' : '/api/sign'
+$errorBar = $('.progress-bar.error')
+$successBar = $('.progress-bar.success')
+$successMessage = $('.upload-message.success')
 
-// Uploader states
-STATES = {
-  SELECT: 0,
-  SIGNATURE: 1,
-  UPLOADING: 2,
-  UPLOADED: 3,
+const $getUploadItem = file => $uploadList.children("[data-name='" + file.name + "']")
+
+let countSubmitted = 0
+let countSuccess = 0
+let countError = 0
+let hasBeenWarned = false
+
+$albumSelect.change(e => $fileUpload.removeClass('hidden'))
+
+const handleSubmit = file => {
+  countSubmitted += 1
+  $uploadMessage.text('Uploading ' + countSubmitted + ' files')
 }
 
-const fileInput = document.getElementById('file-input')
-const selectInput = document.getElementById('select-album')
 
-const onSelect = () => {
-    const files = fileInput.files
-    const uploader = new ImageUploader(files)
+const handleSuccess = file => {
+  countSuccess += 1
+  $successMessage.text(countSuccess + ' successful, ' + countError + ' failed')
+  $successBar.css('width', 100 * countSuccess / countSubmitted + '%')
+  let $uploadItem = $getUploadItem(file)
+  $uploadItem.find('p').text('Success')
 }
-fileInput.onchange = onSelect
-selectInput.onchange = onSelect
 
-class ImageUploader {
 
-  constructor(files) {
-    // Cache DOM
-    this.statusEl = document.getElementById('status')
-    this.uploadListEl = document.getElementById('upload-list')
+const handleError = file => {
+  countError += 1
+  $successMessage.text(countSuccess + ' successful, ' + countError + ' failed')
+  $errorBar.css('width', 100 * countError / countSubmitted + '%')
+  let $uploadItem = $getUploadItem(file)
+  $uploadItem.find('p').text('Failed')
+}
 
-    this.imageUploads = []
-    this.signedImageCount = 0
-    this.uploadingImageCount = 0
-    this.uploadedImageCount = 0
-    this.failedImageCount = 0
 
-    // Ensure files selected
-    this.setState(STATES.SELECT)
-    if (!files.length > 0) return
+const onProgress = (e, data) => {
+  $uploadBar.css('width', 100 * data.loaded / data.total + '%')
+}
 
-    // Ensure album selected
-    const optionIdx = selectInput.options.selectedIndex
-    const album_slug = selectInput.options[optionIdx].value
-    if (!album_slug) {
-      this.updateStatus('Select an album first', false)
-      return
+
+const onSubmit = (e, data) => {
+  if (!$albumSelect.val()) {
+    if (!hasBeenWarned) {
+      alert('Select an album')
+      hasBeenWarned = true
     }
-
-    this.setState(STATES.SIGNATURE)
-
-    for (let idx = 0; idx < files.length; idx++) {
-      this.imageUploads.push(new ImageUpload(files[idx], this.uploadListEl))
-    }
-    fileInput.value = ""
-
-    // Request S3 signatures for each image
-    const callback = this.onSignatureFetched.bind(this)
-    this.imageUploads.forEach(i => i.getSignature(album_slug, callback))
+    return false
+  }
+  if (data.files.length > 1) {
+    console.error('More than one data file - ', data.files)
+    return false
   }
 
-  onSignatureFetched() {
-    this.signedImageCount += 1
-    if (this.signedImageCount === this.imageUploads.length) {
-      this.downloadImages(1)
-      this.setState(STATES.UPLOADING)
-    }
+  $uploadForm.addClass('hidden')
+  $progressHolder.removeClass('hidden')
+
+  let file = data.files[0]
+
+  console.warn('Submitted', file.name)
+  handleSubmit(file)
+  let $uploadItem = $getUploadItem(file)
+  if ($uploadItem.length > 0) {
+    return
   }
 
-  downloadImages(count) {
-    if (this.imageUploads.length < 1) {
-      return
-    }
-    for (let i = 0; i < count; i++) {
-      const img = this.imageUploads.pop()
-      if (!img) continue
-      img.upload(this.onUploadFinished.bind(this), this.onUploadFailed.bind(this))
-      this.uploadingImageCount += 1
-    }
-  }
+  const src = URL.createObjectURL(file)
+  $uploadItem = $('<div></div>')
+    .addClass('upload-image')
+    .attr('data-name', file.name)
 
-  onUploadFinished() {
-    this.uploadedImageCount += 1
-    this.uploadingImageCount -= 1
-    this.checkFinished()
-  }
+  let $img = $('<img>').attr('height', 140).attr('src', src)
+  $uploadItem.append($img)
+  $uploadItem.append('<p>Uploading</p>')
+  $uploadList.append( $uploadItem)
+}
 
-  onUploadFailed() {
-    this.failedImageCount += 1
-    this.uploadingImageCount -= 1
-    this.checkFinished()
-  }
 
-  checkFinished() {
-    this.downloadImages(1)
-    this.updateStatus('Uploading images...', true)
-    const numFinished = this.uploadedImageCount + this.failedImageCount
-    if (numFinished === this.imageUploads.length) {
-      this.setState(STATES.UPLOADED)
-    }
-  }
+const onDone = (e, data) => {
+  const file = data.files[0]
+  let $uploadItem = $uploadList.children("[data-name='" + file.name + "']")
+  let response =  data._response.result
 
-  setState(state) {
-    this.state = state
-    switch(state) {
-        case STATES.SIGNATURE:
-            this.updateStatus('Preparing images for upload...', true)
-            break
-        case STATES.UPLOADING:
-            this.updateStatus('Uploading images...', true)
-            break
-        case STATES.UPLOADED:
-            this.updateStatus('Upload finished', true)
-
-            break
-        case STATES.SELECT:
-        default:
-          this.updateStatus('Select image(s) to upload', false)
-          for (let idx = 0; idx < this.uploadListEl.children.length; idx++) {
-            this.uploadListEl.removeChild(this.uploadListEl.children[idx])
-          }
-    }
-  }
-
-  updateStatus(msg, showCounts) {
-    this.statusEl.innerHTML = '<p><strong>'+msg+'</strong></p>'
-    if (showCounts) {
-      this.statusEl.innerHTML += '<p>Pending: '+this.imageUploads.length+'</p>'
-      this.statusEl.innerHTML += '<p>Uploading: '+this.uploadingImageCount+'</p>'
-      this.statusEl.innerHTML += '<p>Uploaded: '+this.uploadedImageCount+'</p>'
-      this.statusEl.innerHTML += '<p>Failed: '+this.failedImageCount+'</p>'
-    }
+  if (response.is_valid) {
+    handleSuccess(file)
+  } else {
+    console.error('Failure uploading', file.name, ' - ', response.errors)
+    handleError(file)
   }
 }
 
 
-class ImageUpload {
-  constructor(file, uploadListEl) {
-    this.file = file
-    // TODO: check file.size in bytes
-    this.s3Url = false
-    this.s3SignatureData = false
-
-    this.divEl = document.createElement("div")
-    this.divEl.classList.add('upload-image')
-    this.paraEl = document.createElement("p")
-    this.pendingMessage('Requesting upload...')
-
-    this.imageEl = new Image()
-    this.imageEl.height = 140
-    this.imageEl.onload = () => uploadListEl.appendChild(this.divEl)
-
-    this.divEl.appendChild(this.imageEl)
-    this.divEl.appendChild(this.paraEl)
-
-    this.imageEl.src =  URL.createObjectURL(this.file)
+const onFail = (e, data) => {
+  const file = data.files[0]
+  console.error('Failure uploading', file.name, ' - ', data.errorThrown)
+  handleError(file)
 }
 
-  getSignature(album_slug, callback) {
-    const xhr = new XMLHttpRequest()
-    const onFail = () => {
-      console.warn('Signature request failure for ', this.file.name, xhr.status, xhr.responseText)
-      this.failMessage('Upload not approved')
-      callback()
-    }
-    const onSuccess = () => {
-      if (xhr.status !== 200) {
-        onFail()
-        return
-      }
-      console.warn('Signature request success for', this.file.name)
-      const response = JSON.parse(xhr.responseText)
-      this.s3Url = response.url
-      this.s3SignatureData = response.data
-      this.pendingMessage('Upload approved, waiting...')
-      callback()
-    }
 
-    const qs = {
-      album_slug: album_slug,
-      file_name: this.file.name,
-      file_type: this.file.type
-    }
-    const url = SIGN_URL + '?' + buildQuerystring(qs)
-    xhr.open('GET', url)
-    xhr.onload = onSuccess
-    xhr.onerror = onFail
-    console.warn('Requesting S3 upload signature for', this.file.name)
-    xhr.send()
-  }
-
-  upload(successCallback, failCallBack) {
-    this.paraEl.style.color = 'orange'
-    this.divEl.style.order = '-1'
-    this.paraEl.innerText = 'Uploading image...'
-    const xhr = new XMLHttpRequest()
-    const onFail = () => {
-      console.warn('File upload failure for ', this.file.name, xhr.status, xhr.responseText)
-      this.failMessage('Upload failed :(')
-      failCallBack()
-    }
-    const onSuccess = () => {
-      if (xhr.status !== 200 && xhr.status !== 204) {
-        onFail()
-        return
-      }
-      console.warn('File upload success for ', this.file.name, xhr.status, xhr.responseText)
-      this.successMessage('Upload success :)')
-      successCallback()
-    }
-
-    // Build and send form
-    xhr.open("POST", this.s3Url)
-    const postData = new FormData()
-    for (let key in this.s3SignatureData.fields) {
-      postData.append(key, this.s3SignatureData.fields[key]);
-    }
-    postData.append('file', this.file);
-    xhr.onload = onSuccess
-    xhr.onerror = onFail
-    console.warn('Uploading', this.file.name)
-    xhr.send(postData)
-  }
-
-  pendingMessage(msg) {
-      this.paraEl.innerText = msg
-      this.paraEl.style.color = 'orange'
-      this.divEl.style.order = '-1'
-  }
-
-  successMessage(msg) {
-      this.paraEl.innerText = msg
-      this.paraEl.style.color = 'green'
-      this.divEl.style.order = '0'
-  }
-
-  failMessage(msg) {
-      this.paraEl.innerText = msg
-      this.paraEl.style.color = 'red'
-      this.divEl.style.order = '1'
-  }
-}
-
-const buildQuerystring = qs => Object.keys(qs)
-    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(qs[key]))
-    .join('&')
+// https://github.com/blueimp/jQuery-File-Upload/wiki/Options
+$('#upload-form').fileupload({
+  // Configuration
+  type: 'POST',
+  sequentialUploads: true,
+  dataType: 'json',
+  url: '/upload/',
+  paramName: 'file',
+  // Event handlers
+  submit: onSubmit,
+  done: onDone,
+  fail: onFail,
+  progressall: onProgress,
+})

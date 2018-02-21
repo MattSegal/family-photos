@@ -3,7 +3,6 @@ echo "Starting photos as `whoami`"
 
 NUM_WORKERS=3
 DJANGO_WSGI_MODULE='photos.wsgi'
-# export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 
 if [ "$1" == 'prod' ]
 then

@@ -114,3 +114,15 @@
         name: gunicorn
         virtualenv: /srv/env
         virtualenv_python: python3.5
+- hosts: pull-code
+  remote_user: root
+  tasks:
+    - name: Test connection
+      ping:
+    - git:
+        repo: https://github.com/MattSegal/family-photos.git
+        dest: /srv/repo/
+    - copy:
+        src: /srv/repo/photos/
+        dest: /srv/app/
+        directory_mode: yes

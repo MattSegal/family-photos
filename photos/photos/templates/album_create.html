@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-wrapper">
     <p><strong>Create a new album:</strong></p>
-    <form action="/album/" method="post">
+    <form action="/album/create/" method="post">
         {% csrf_token %}
         {{ form.name }}
         <input type="submit" value="Submit">

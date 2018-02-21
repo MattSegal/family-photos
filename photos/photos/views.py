@@ -70,11 +70,18 @@ class UploadView(TemplateView):
         return context
 
     def post(self, request):
-        # https://simpleisbetterthancomplex.com/tutorial/2016/11/22/django-multiple-file-upload-using-ajax.html
-        form = PhotoForm(self.request.POST, self.request.FILES)
+        try:
+            title = request.FILES['file']._name
+        except (IndexError, KeyError, AttributeError):
+            title = None
+
+        post_data = request.POST.copy()
+        post_data['title'] = title
+
+        form = PhotoForm(post_data, request.FILES)
         if form.is_valid():
             photo = form.save()
-            data = {'is_valid': True, 'name': photo.file.name, 'url': photo.file.url}
+            data = {'is_valid': True}
         else:
-            data = {'is_valid': False}
+            data = {'is_valid': False, 'errors': form.errors}
         return JsonResponse(data)
