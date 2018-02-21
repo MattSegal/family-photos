@@ -119,10 +119,25 @@
   tasks:
     - name: Test connection
       ping:
-    - git:
+    - name: Clone repo
+      git:
         repo: https://github.com/MattSegal/family-photos.git
-        dest: /srv/repo/
-    - copy:
-        src: /srv/repo/photos/
-        dest: /srv/app/
-        directory_mode: yes
+        dest: /srv/repo
+    - name: Stop Gunicorn
+      shell: killall -v gunicorn || true
+    - name: Copy code
+      shell: rm -rf /srv/app/ && cp -R /srv/repo/photos /srv/app
+    - name: Make 'stop_gunicorn' executable
+      file:
+          path: /srv/app/scripts/stop_gunicorn.sh
+          mode: +x
+    - name: Make 'start_gunicorn' executable
+      file:
+          path: /srv/app/scripts/start_gunicorn.sh
+          mode: +x
+    - name: Make 'manage' executable
+      file:
+          path: /srv/app/manage.py
+          mode: +x
+    - name: Start Gunicorn
+      shell: /srv/app/scripts/start_gunicorn.sh prod deploy
