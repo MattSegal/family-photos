@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper">
+    <p><strong>Create a new album:</strong></p>
+    <form action="/album/create/" method="post">
+        {% csrf_token %}
+        {{ form.name }}
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if form.non_field_errors %}
+        <p>{{ form.non_field_errors }}</p>
+    {% endif %}
+
+    {% if form.errors %}
+        <p>{{ form.errors }}</p>
+    {% endif %}
+</div>
+{% endblock %}

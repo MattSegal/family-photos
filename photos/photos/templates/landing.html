@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% for album in albums %}
+    <div class="page-wrapper">
+        <h1 class="album-title">
+            <a href="{% url 'album-detail' slug=album.slug %}">{{album.name}}</a>
+            <hr>
+        </h1>
+    </div>
+    <div class="images page-wrapper">
+    {% for photo in album.photo_set.all|slice:":4" %}
+        <img
+            class="thumb"
+            height="{{ thumb_height }}px"
+            width="{{ thumb_width }}px"
+            src="{{ photo.get_thumb_url }}"
+        />
+    {% endfor%}
+    </div>
+{% endfor%}
+<div id="display-modal"><img id="display-image"/></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

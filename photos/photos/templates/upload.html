@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper">
+    <form id="upload-form">
+        {% csrf_token %}
+        <p><strong>Select the album to upload to</strong></p>
+        <select name="album" id="select-album" form="upload-form">
+            <option value="">-</option>
+            {% for album in albums %}
+            <option value="{{album.pk}}">{{album.name}}</option>
+            {% endfor %}
+        </select>
+        <div id="new-album-link">
+            <a href="{% url 'album-create' %}">Create new album</a>
+        </div>
+        <div class="file-upload hidden">
+            <p id="status"><strong>Select image(s) to upload</strong></p>
+            <input id="file-input" type="file" multiple>
+        </div>
+    </form>
+    <div class="progress-holder hidden">
+        <div class="progress-bar upload"></div>
+        <div class="upload-message upload">Upload</div>
+
+    </div>
+    <div class="progress-holder hidden">
+        <div class="progress-bar success"></div>
+        <div class="progress-bar error"></div>
+        <div class="upload-message success"></div>
+    </div>
+    <div id="upload-list"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/vendor/jquery-1.9.1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/vendor/jquery.ui.widget.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/vendor/jquery.fileupload.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/upload.js' %}"></script>
+
+{% endblock %}

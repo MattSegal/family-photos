@@ -2,3 +2,7 @@ env/
 .env/
 *.pyc
 secrets.json
+*.sqlite3
+.vagrant
+*.log
+*.retry

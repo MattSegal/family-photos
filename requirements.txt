@@ -1,5 +1,0 @@
-zappa
-pillow==3.4.2
-boto3
-flask
-slugify

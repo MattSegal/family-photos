@@ -1,0 +1,4 @@
+[webserver]
+54.252.159.196 ansible_python_interpreter=/usr/bin/python3
+[pull-code]
+54.252.159.196 ansible_python_interpreter=/usr/bin/python3

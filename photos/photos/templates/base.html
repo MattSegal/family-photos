@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Memories Ninja</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <header class="page-wrapper">
+        <h1><a href="{% url 'landing' %}">Memories Ninja</a></h1>
+        <h2><a href="{% url 'upload' %}">Upload</a></h2>
+    </header>
+    {% block content %}
+    {% endblock %}
+    {% block scripts %}
+    {% endblock %}
+    <footer></footer>
+</body>
+</html>
