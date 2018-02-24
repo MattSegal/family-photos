@@ -1,6 +1,9 @@
+import logging
 from django.db import models
 
 from photos.images import get_s3_key, thumbnail
+
+logger = logging.getLogger(__name__)
 
 
 class Album(models.Model):
@@ -20,6 +23,15 @@ class Photo(models.Model):
     file = models.ImageField(upload_to=get_s3_key)
 
     def save(self, *args, **kwargs):
+        # When creating the photo for the first time.
+        # ensure that we don't create duplicate database entries
+        if not self.pk:
+            file_name = get_s3_key(self, self.file.name)
+            if Photo.objects.filter(file=file_name).exists():
+                msg = '{} is already uploaded as {}'.format(self, file_name)
+                logger.info(msg)
+                raise Photo.AlreadyUploaded(msg)
+
         super().save(*args, **kwargs)
         if not self.thumbnailed_at:
             thumbnail(self)
@@ -38,3 +50,7 @@ class Photo(models.Model):
 
     def __str__(self):
         return self.title
+
+    class AlreadyUploaded(Exception):
+        # Throw when Photo file is already uploaded
+        pass

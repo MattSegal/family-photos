@@ -64,6 +64,7 @@ header a {
 
 
 #select-album {
+    min-width: 130px;
     margin-bottom: 1em;
 }
 

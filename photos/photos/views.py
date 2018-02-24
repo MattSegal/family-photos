@@ -80,7 +80,11 @@ class UploadView(TemplateView):
 
         form = PhotoForm(post_data, request.FILES)
         if form.is_valid():
-            photo = form.save()
+            try:
+                photo = form.save()
+            except Photo.AlreadyUploaded:
+                pass
+
             data = {'is_valid': True}
         else:
             data = {'is_valid': False, 'errors': form.errors}
