@@ -17,6 +17,7 @@ if [ "$2" == 'deploy' ]
 then
     pip3 install -r /srv/app/requirements/prod.txt
     /srv/app/manage.py migrate
+    /srv/app/manage.py collectstatic --noinput
 fi
 
 cd /srv/app/
