@@ -69,7 +69,6 @@ WSGI_APPLICATION = 'photos.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -125,3 +124,22 @@ ALLOWED_CONTENT_TYPES = ('image/jpeg',)
 THUMBNAIL_HEIGHT = 140  # px
 THUMBNAIL_WIDTH = 225  # px
 DISPLAY_HEIGHT = 700 # px
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

@@ -25,5 +25,6 @@ gunicorn photos.wsgi:application \
   --daemon \
   --name photos \
   --workers 3 \
-  --log-level=debug \
+  --capture-output \
+  --log-level info \
   --log-file=/srv/gunicorn.log

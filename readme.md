@@ -14,7 +14,10 @@ Users can:
 ## TODO
 
 * Download bucket contents (by album)
-* Ensure unique image names
+* Force rethumbnailing
+* Offline thumbnailing
+* Improve eagerness of image loading on page
+* add better image viewing UI
 
 ## Deployment
 

@@ -32,9 +32,9 @@ class Photo(models.Model):
                 logger.info(msg)
                 raise Photo.AlreadyUploaded(msg)
 
-        super().save(*args, **kwargs)
-        if not self.thumbnailed_at:
-            thumbnail(self)
+        # super().save(*args, **kwargs)
+        # if not self.thumbnailed_at:
+            # thumbnail(self)
 
     def get_original_key(self, filename):
         return 'original/{}'.format(filename)
