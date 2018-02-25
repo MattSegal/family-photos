@@ -19,9 +19,16 @@ Users can:
 * Improve eagerness of image loading on page
 * add better image viewing UI
 
+* Try override blank=True in PhotoForm
+* Add celery.log to papaertrail
+* Figure out how to use celery locally
+* TODO - stop FS from mangling names
+
 ## Deployment
 
 /srv/app for Django app
 /srv/env for virtualenv
 /srv/static for staticfiles
+/srv/photos for temp local photo storage
 /srv/gunicorn.log for gunicorn logs
+/srv/celery.log for celery logs

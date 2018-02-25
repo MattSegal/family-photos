@@ -28,3 +28,9 @@ gunicorn photos.wsgi:application \
   --capture-output \
   --log-level info \
   --log-file=/srv/gunicorn.log
+
+celery workers \
+  --app photos \
+  --loglevel info \
+  --logfile /srv/celery.log \
+  --detach

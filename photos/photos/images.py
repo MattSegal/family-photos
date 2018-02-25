@@ -14,6 +14,17 @@ DATETIME_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == 'Dat
 log = logging.getLogger(__name__)
 
 
+def get_local_filename(instance, filename):
+    """
+    Get local filename for the photo - use a hash of the photo bytes to
+    ensure that photos are unique.
+    """
+    img_bytes = instance.local_file._file.file.read()
+    instance.local_file._file.file.seek(0)
+    filename = get_img_filename(img_bytes, filename)
+    return filename
+
+
 def get_s3_key(instance, filename):
     """
     Get S3 key for the photo - use a hash of the photo bytes to
@@ -21,22 +32,28 @@ def get_s3_key(instance, filename):
     """
     img_bytes = instance.file._file.file.read()
     instance.file._file.file.seek(0)
+    filename = get_img_filename(img_bytes, filename)
+    return instance.get_original_key(filename)
+
+
+def get_img_filename(img_bytes, filename):
+    """
+    Get filename from hash of image
+    """
     filename_base = hashlib.md5(img_bytes).hexdigest()
     _, filename_ext = os.path.splitext(filename)
-    return instance.get_original_key(
-        filename_base + filename_ext.lower()
-    )
+    return filename_base + filename_ext.lower()
 
 
 def thumbnail(photo):
     """
     Thumbnail photo and upload it to S3
     """
-    log.debug('Resizing photo %s with file %s', photo.pk, photo.file.name)
+    log.info('Resizing photo %s with file %s', photo.pk, photo.file.name)
     storage = photo.file.storage
     bucket = storage._wrapped._bucket
 
-    with storage.open(photo.file.name) as img_file:
+    with storage.open(photo.file.name, 'rb') as img_file:
         # Thumbnail the image and upload to S3
         taken_time = get_image_taken_time(img_file)
         thumb_file = set_image_size(img_file,
@@ -53,14 +70,14 @@ def thumbnail(photo):
     }
 
     key = photo.get_thumb_key()
-    log.debug('Uploading %s', key)
+    log.info('Uploading %s', key)
     bucket.upload_fileobj(thumb_file, key, upload_config)
-    log.debug('Finished uploading %s', key)
+    log.info('Finished uploading %s', key)
 
     key = photo.get_display_key()
-    log.debug('Uploading %s', key)
+    log.info('Uploading %s', key)
     bucket.upload_fileobj(disp_file, key, upload_config)
-    log.debug('Finished uploading %s', key)
+    log.info('Finished uploading %s', key)
 
     photo.taken_at = taken_time
     photo.thumbnailed_at = timezone.now()

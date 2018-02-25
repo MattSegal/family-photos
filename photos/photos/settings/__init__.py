@@ -117,6 +117,7 @@ AWS_S3_SECURE_URLS = False
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_ACCESS_KEY_ID = os.environ.get('AWS_S3_ACCESS_KEY_ID')
 AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
+LOCAL_MEDIA_ROOT = '/srv/photos'
 
 # Image properties
 ALLOWED_EXTENSIONS = ('jpeg', 'jpg')

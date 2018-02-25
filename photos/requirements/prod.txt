@@ -4,3 +4,4 @@ django-extensions
 boto3
 django-storages
 Pillow
+celery

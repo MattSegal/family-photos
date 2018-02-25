@@ -46,6 +46,16 @@
         name: nginx
         state: restarted
 
+    # RabbitMQ
+    - name: Install RabbitMQ
+      apt:
+        name: rabbitmq-server
+        state: present
+    - name: Restart nginx
+      service:
+        name: rabbitmq-server
+        state: running
+
     # Postgres
     - name: Install PostgreSQL
       apt: name={{ item }} state=installed
@@ -83,6 +93,12 @@
       file:
         state: directory
         path: /srv/app
+        owner: root
+        group: root
+    - name: Local storage folder
+      file:
+        state: directory
+        path: /srv/photos
         owner: root
         group: root
     - name: Static files folder

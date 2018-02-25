@@ -115,7 +115,7 @@ $('#upload-form').fileupload({
   sequentialUploads: true,
   dataType: 'json',
   url: '/upload/',
-  paramName: 'file',
+  paramName: 'local_file',
   // Event handlers
   submit: onSubmit,
   done: onDone,

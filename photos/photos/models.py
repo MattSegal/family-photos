@@ -1,10 +1,13 @@
 import logging
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 from django.db import models
 
-from photos.images import get_s3_key, thumbnail
+from photos.images import get_s3_key, get_local_filename, thumbnail
+from photos.celery import upload_photo_to_s3
 
 logger = logging.getLogger(__name__)
-
+file_storage = FileSystemStorage(location=settings.LOCAL_MEDIA_ROOT)
 
 class Album(models.Model):
     name = models.CharField(max_length=25)
@@ -16,25 +19,53 @@ class Album(models.Model):
 
 class Photo(models.Model):
     title = models.CharField(max_length=255)
+    # When the Photo was created
     created_at = models.DateTimeField(auto_now_add=True)
+    # When the image was uploaded to S3
+    uploaded_at = models.DateTimeField(null=True, blank=True)
+    # When the image was thumbnailed
     thumbnailed_at = models.DateTimeField(null=True, blank=True)
+    # When the image was taken
     taken_at = models.DateTimeField(null=True, blank=True)
     album = models.ForeignKey(Album, null=True, on_delete=models.SET_NULL)
-    file = models.ImageField(upload_to=get_s3_key)
+    # File uploaded to S3
+    file = models.ImageField(
+        upload_to=get_s3_key,
+        null=True,
+        blank=True
+    )
+    # Local file on disk
+    local_file = models.ImageField(
+        upload_to=get_local_filename,
+        storage=file_storage,
+        null=True,
+        blank=True
+    )
 
     def save(self, *args, **kwargs):
         # When creating the photo for the first time.
         # ensure that we don't create duplicate database entries
         if not self.pk:
-            file_name = get_s3_key(self, self.file.name)
-            if Photo.objects.filter(file=file_name).exists():
-                msg = '{} is already uploaded as {}'.format(self, file_name)
+            img_bytes = self.local_file._file.file.read()
+            self.local_file._file.file.seek(0)
+            local_filename = get_local_filename(self, self.local_file.name)
+            s3_key = self.get_original_key(local_filename)
+
+            exists_locally = Photo.objects.filter(local_file=local_filename).exists()
+            exists_s3 = Photo.objects.filter(file=s3_key).exists()
+            if exists_locally or exists_s3:
+                msg = '{} is already uploaded as {}'.format(self, local_filename)
+                if exists_locally:
+                    msg += '. File is present locally.'
+                if exists_s3:
+                    msg += '. File is present on S3.'
                 logger.info(msg)
                 raise Photo.AlreadyUploaded(msg)
 
-        # super().save(*args, **kwargs)
-        # if not self.thumbnailed_at:
-            # thumbnail(self)
+        super().save(*args, **kwargs)
+
+        if not self.uploaded_at:
+            upload_photo_to_s3.delay(self.pk)
 
     def get_original_key(self, filename):
         return 'original/{}'.format(filename)
