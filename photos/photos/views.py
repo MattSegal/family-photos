@@ -16,7 +16,7 @@ class LandingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        photo_qs = Photo.objects.exclude(file='').order_by('-taken_at').only('file')
+        photo_qs = Photo.objects.exclude(file='').order_by('taken_at').only('file')
         prefetch = Prefetch('photo_set', queryset=photo_qs)
         albums = Album.objects.prefetch_related(prefetch).all()
         context.update({
@@ -37,7 +37,7 @@ class AlbumView(DetailView):
             Photo.objects
             .filter(album=self.object)
             .exclude(file='')
-            .order_by('-taken_at')
+            .order_by('taken_at')
             .all()
             .only('file')
         )
