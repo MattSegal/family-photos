@@ -60,10 +60,10 @@
       apt:
         name: rabbitmq-server
         state: present
-    - name: Restart nginx
+    - name: Start RabbitMQ
       service:
         name: rabbitmq-server
-        state: running
+        state: started
 
     # Postgres
     - name: Install PostgreSQL
