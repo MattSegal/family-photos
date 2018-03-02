@@ -9,5 +9,6 @@ urlpatterns = [
     path('album/create/', views.CreateAlbumView.as_view(), name='album-create'),
     path('album/<slug:slug>/', views.AlbumView.as_view(), name='album-detail'),
     path('upload/', views.UploadView.as_view(), name='upload'),
+    path('review/', views.ReviewView.as_view(), name='review'),
     path('admin/', admin.site.urls),
 ]

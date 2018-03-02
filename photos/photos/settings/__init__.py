@@ -144,3 +144,7 @@ LOGGING = {
         },
     },
 }
+
+# CELERY
+CELERY_TASK_ALWAYS_EAGER = True
+DJANGO_SETTINGS_MODULE = 'photos.settings.dev'

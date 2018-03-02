@@ -7,4 +7,5 @@ ALLOWED_HOSTS = ['192.168.2.2']
 # 'family-photos-dev-thumb'
 AWS_STORAGE_BUCKET_NAME = 'family-photos-dev'
 
-DJANGO_SETTINGS_MODULE = 'photos.settings.dev'
+# Celery
+CELERY_TASK_ALWAYS_EAGER = False

@@ -29,7 +29,7 @@ gunicorn photos.wsgi:application \
   --log-level info \
   --log-file=/srv/gunicorn.log
 
-celery workers \
+celery worker \
   --app photos \
   --loglevel info \
   --logfile /srv/celery.log \

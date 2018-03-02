@@ -3,10 +3,13 @@ from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
 from django.utils.text import slugify
 from django.db.models import Prefetch
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from photos.models import Album, Photo
 from photos.forms import PhotoForm
+from photos.celery import upload_photo_to_s3, thumbnail_photo
+
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -90,3 +93,30 @@ class UploadView(TemplateView):
         else:
             data = {'is_valid': False, 'errors': form.errors}
         return JsonResponse(data)
+
+
+class ReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    login_url = '/admin/login/'
+    redirect_field_name = 'next'
+    template_name = 'review.html'
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
+        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
+        context['not_uploaded_photos'] = not_uploaded_photos
+        context['not_thumbnailed_photos'] = not_thumbnailed_photos
+        return context
+
+    def post(self, request):
+        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
+        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
+        for p in not_thumbnailed_photos:
+            thumbnail_photo.delay(p.pk)
+        for p in not_uploaded_photos:
+            upload_photo_to_s3.delay(p.pk)
+
+        return HttpResponseRedirect('/review/')

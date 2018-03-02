@@ -11,6 +11,15 @@
 
     # TODO Fail2Ban
 
+    # Papertrail
+    - name: Copy Papertrail config
+      copy:
+        src: ./files/log_files.yml
+        dest: /etc/log_files.yml
+        owner: root
+        group: root
+        mode: 0644
+
     # NGINX
     - name: Install nginx
       apt:
@@ -18,14 +27,14 @@
         state: present
     - name: Copy nginx config
       copy:
-        src: ./nginx/nginx.conf
+        src: ./files/nginx.conf
         dest: /etc/nginx/nginx.conf
         owner: www-data
         group: www-data
         mode: 0644
     - name: Copy website config
       copy:
-        src: ./nginx/website
+        src: ./files/website
         dest: /etc/nginx/sites-available/website
         owner: www-data
         group: www-data

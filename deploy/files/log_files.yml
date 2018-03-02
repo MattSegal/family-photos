@@ -4,6 +4,7 @@ files:
   - /var/log/nginx/access.log
   - /var/log/nginx/error.log
   - /srv/gunicorn.log
+  - /srv/celery.log
 destination:
   host: logs2.papertrailapp.com
   port: 45077
