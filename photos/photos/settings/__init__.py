@@ -15,11 +15,9 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'vx^j4mg9^e19!s5uyyrc*u(gx(f=*la_@$vli$=r&=gn1j^(%e'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -33,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'raven.contrib.django.raven_compat',
     'photos'
 ]
 
@@ -68,13 +67,12 @@ WSGI_APPLICATION = 'photos.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'photos',
-        'USER': 'django',
-        'PASSWORD': 'password',
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '5432',
     }

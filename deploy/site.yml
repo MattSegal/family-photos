@@ -78,15 +78,15 @@
       become: true
       become_user: postgres
       postgresql_user:
-        name: django
-        password: password
+        name: "{{ db_user }}"
+        password: "{{ db_password}}"
     - name: Setup photos database
       become: true
       become_user: postgres
       postgresql_db:
         name: photos
         state: present
-        owner: django
+        owner: "{{ db_user }}"
         port: 5432
         lc_collate: en_US.UTF-8
         lc_ctype: en_US.UTF-8
@@ -118,15 +118,36 @@
         group: www-data
 
     # Secrets
+    # AWS Access Key
     - lineinfile:
         path: /etc/environment
         regexp: '^AWS_S3_ACCESS_KEY_ID'
         line: 'AWS_S3_ACCESS_KEY_ID="{{ aws_access_key_id }}"'
-
+    # AWS Access Password
     - lineinfile:
         path: /etc/environment
         regexp: '^AWS_S3_SECRET_ACCESS_KEY'
         line: 'AWS_S3_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"'
+    # Sentry ID
+    - lineinfile:
+        path: /etc/environment
+        regexp: '^RAVEN_DSN'
+        line: 'RAVEN_DSN="{{ raven_dsn }}"'
+    # Django Secret Key
+    - lineinfile:
+        path: /etc/environment
+        regexp: '^DJANGO_SECRET_KEY'
+        line: 'DJANGO_SECRET_KEY="{{ django_secret_key }}"'
+    # Postgres database user
+    - lineinfile:
+        path: /etc/environment
+        regexp: '^DB_USER'
+        line: 'DB_USER="{{ db_user }}"'
+    # Postgres database password
+    - lineinfile:
+        path: /etc/environment
+        regexp: '^DB_PASSWORD'
+        line: 'DB_PASSWORD="{{ db_password }}"'
 
     # Django app
     - name: Install Django dependencies
@@ -134,11 +155,19 @@
       with_items:
         - python3-pip
         - python-virtualenv
-    - name: Create virtualenv with gunicorn
+    - name: Copy Python package requirements
+      copy:
+        src: ../photos/requirements/prod.txt
+        dest: /srv/requirements.txt
+        owner: root
+        group: root
+        mode: 0644
+    - name: Create virtualenv and install Python packages
       pip:
-        name: gunicorn
+        requirements: /srv/requirements.txt
         virtualenv: /srv/env
         virtualenv_python: python3.5
+
 - hosts: pull-code
   remote_user: root
   tasks:
@@ -149,20 +178,22 @@
         repo: https://github.com/MattSegal/family-photos.git
         dest: /srv/repo
     - name: Stop Gunicorn
-      shell: killall -v gunicorn || true
+      shell: ps auxww | grep 'gunicorn' | awk '{print $2}' | xargs kill
+    - name: Stop Celery
+      shell: ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill
     - name: Copy code
       shell: rm -rf /srv/app/ && cp -R /srv/repo/photos /srv/app
-    - name: Make 'stop_gunicorn' executable
+    - name: Make 'stop_gunicorn' script executable
       file:
           path: /srv/app/scripts/stop_gunicorn.sh
           mode: +x
-    - name: Make 'start_gunicorn' executable
+    - name: Make 'start_gunicorn' script executable
       file:
           path: /srv/app/scripts/start_gunicorn.sh
           mode: +x
-    - name: Make 'manage' executable
+    - name: Make 'manage' script executable
       file:
           path: /srv/app/manage.py
           mode: +x
     - name: Start Gunicorn
-      shell: /srv/app/scripts/start_gunicorn.sh prod deploy
+      shell: /srv/app/scripts/start_gunicorn.sh prod

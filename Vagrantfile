@@ -11,6 +11,13 @@ Vagrant.configure(2) do |config|
      config.vm.define "photos" do |photos|
         photos.vm.hostname = "photos"
         photos.vm.box = "ubuntu/xenial64"
+
+        # Stop virtualbox from putting a stupid logfile in my project directory
+        photos.vm.provider "virtualbox" do |vb|
+            vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+        end
+
+        # Configure networking
         photos.vm.network "private_network", ip: "192.168.2.2", :adapter => 2
         photos.vm.network "forwarded_port", guest: 80, host: 80
         photos.vm.network "forwarded_port", guest: 8080, host: 8080

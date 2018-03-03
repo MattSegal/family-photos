@@ -6,3 +6,4 @@ secrets.json
 .vagrant
 *.log
 *.retry
+*.secret.*

@@ -8,21 +8,22 @@ Users can:
 
 - browse photos
 - upload photos
-- download photos
 
 
-## TODO
+## To Do (prioritized)
 
-* Download bucket contents (by album)
-* Force rethumbnailing
-* Offline thumbnailing
-* Improve eagerness of image loading on page
-* add better image viewing UI
-
-* Try override blank=True in PhotoForm
-* Add celery.log to papaertrail
+* Make upload bar text a little easier to read
+* Display "0 successful, 0 failed" immediately
+* Add better image viewing UI (left / right arrows, cross to exit, animation?)
 * Figure out how to use celery locally
-* TODO - stop FS from mangling names
+* Force rethumbnailing
+* Improve eagerness of image loading on page
+* Try reduce quality of large images slightly
+* Add login with Google OAuth to sign up / in
+* Auto retry failed uploads
+* Download bucket contents (by album)
+* Prod db backups to s3 and local
+* Dockerize?
 
 ## Deployment
 

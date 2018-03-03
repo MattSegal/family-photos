@@ -49,7 +49,7 @@ def thumbnail(photo):
     """
     Thumbnail photo and upload it to S3
     """
-    log.info('Resizing photo %s with file %s', photo.pk, photo.file.name)
+    log.info('Resizing Photo[%s] with file %s', photo.pk, photo.file.name)
     storage = photo.file.storage
     bucket = storage._wrapped._bucket
 
