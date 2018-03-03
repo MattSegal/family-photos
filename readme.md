@@ -15,6 +15,7 @@ Users can:
 * Make upload bar text a little easier to read
 * Display "0 successful, 0 failed" immediately
 * Add better image viewing UI (left / right arrows, cross to exit, animation?)
+* Padding at bottom of album
 * Figure out how to use celery locally
 * Force rethumbnailing
 * Improve eagerness of image loading on page
