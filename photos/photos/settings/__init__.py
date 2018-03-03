@@ -30,8 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'raven.contrib.django.raven_compat',
+    'django_extensions',
     'photos'
 ]
 
@@ -128,6 +128,10 @@ DISPLAY_HEIGHT = 700 # px
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console'],
+    },
     'handlers': {
         'console': {
             'level': 'INFO',
@@ -139,6 +143,26 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
+        },
+        # TODO
+        # 'celery': {
+        #     'handlers': ['console'],
+        #     'level': 'INFO',
+        # },
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
         },
     },
 }
