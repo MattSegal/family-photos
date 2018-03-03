@@ -7,3 +7,4 @@ secrets.json
 *.log
 *.retry
 *.secret.*
+*.pid

@@ -149,6 +149,11 @@
         path: /etc/environment
         regexp: '^DB_PASSWORD'
         line: 'DB_PASSWORD="{{ db_password }}"'
+    # Django default settings
+    - lineinfile:
+        path: /etc/environment
+        regexp: '^DJANGO_SETTINGS_MODULE'
+        line: 'DJANGO_SETTINGS_MODULE="photos.settings"'
 
     # Django app
     - name: Install Django dependencies

@@ -31,7 +31,7 @@ function runserver {
 }
 
 function gunicorn {
-    vagrant ssh -c 'sudo -i /srv/app/scripts/start_gunicorn.sh'
+    vagrant ssh -c 'sudo -i /srv/app/scripts/start_gunicorn.sh staging'
 }
 
 function ssh {

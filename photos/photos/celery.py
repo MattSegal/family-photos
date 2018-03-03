@@ -6,7 +6,6 @@ from django.utils import timezone
 
 from photos.images import thumbnail
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.DJANGO_SETTINGS_MODULE)
 app = Celery('photos', broker='amqp://localhost')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

@@ -1,17 +1,30 @@
 #!/bin/bash
-echo "Starting photos app as `whoami`"
-
 NUM_WORKERS=3
 DJANGO_WSGI_MODULE='photos.wsgi'
 
 if [ "$1" == 'prod' ]
 then
-    echo "Using prod settings"
-    export DJANGO_SETTINGS_MODULE='photos.settings.prod'
+  echo "Using prod settings"
+  export DJANGO_SETTINGS_MODULE='photos.settings.prod'
+elif [ "$1" == 'staging' ]
+then
+  echo "Using staging settings"
+  export DJANGO_SETTINGS_MODULE='photos.settings.staging'
+elif [ "$1" == 'dev' ]
+then
+  echo "Using dev settings"
+  export DJANGO_SETTINGS_MODULE='photos.settings.dev'
 else
-    echo "Using dev settings"
-    export DJANGO_SETTINGS_MODULE='photos.settings.dev'
+    echo "ERROR: Argument required, one of (prod, staging, dev)"
+    exit 1
 fi
+
+echo "Starting photos app as `whoami`"
+
+# Set DJANGO_SETTINGS_MODULE as global environment variable
+regex='DJANGO_SETTINGS_MODULE=".\+"'
+line="DJANGO_SETTINGS_MODULE=\"${DJANGO_SETTINGS_MODULE}\""
+sed -i "s/$regex/$line/g" /etc/environment
 
 echo "Activating virtualenv"
 . /srv/env/bin/activate
