@@ -17,8 +17,7 @@
     src="{{ photo.get_thumb_url }}"
 />
 {% endfor%}
-<div id="display-modal"><img id="display-image"/><div>
-</div>
+{% include 'sections/display_modal_include.html' %}
 {% endblock %}
 
 {% block scripts %}

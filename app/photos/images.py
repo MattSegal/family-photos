@@ -117,7 +117,7 @@ def set_image_size(img_file, width, height):
 
     img.thumbnail((width, height), Image.ANTIALIAS)
     img_bytes = BytesIO()
-    img.save(img_bytes, format='JPEG')
+    img.save(img_bytes, format='JPEG', optimize=True)
     img_bytes.seek(0)
     return img_bytes
 
@@ -134,7 +134,7 @@ def set_image_height(img_file, height):
     img = ensure_image_upright(img)
     img.thumbnail((float("inf"), height), Image.ANTIALIAS)
     img_bytes = BytesIO()
-    img.save(img_bytes, format='JPEG')
+    img.save(img_bytes, format='JPEG', optimize=True)
     img_bytes.seek(0)
     return img_bytes, img.width
 

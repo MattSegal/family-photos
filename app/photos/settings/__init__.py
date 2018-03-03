@@ -144,11 +144,6 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        # TODO
-        # 'celery': {
-        #     'handlers': ['console'],
-        #     'level': 'INFO',
-        # },
         'django.db.backends': {
             'level': 'ERROR',
             'handlers': ['console'],

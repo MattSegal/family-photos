@@ -24,6 +24,7 @@ $albumSelect.change(e => $fileUpload.removeClass('hidden'))
 const handleSubmit = file => {
   countSubmitted += 1
   $uploadMessage.text('Uploading ' + countSubmitted + ' files')
+  $successMessage.text(countSuccess + ' successful, ' + countError + ' failed')
 }
 
 
