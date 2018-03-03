@@ -12,6 +12,7 @@
     # TODO Fail2Ban
 
     # Papertrail
+    # TODO: Restart remote_syslog
     - name: Copy Papertrail config
       copy:
         src: ./files/log_files.yml
@@ -178,9 +179,19 @@
         repo: https://github.com/MattSegal/family-photos.git
         dest: /srv/repo
     - name: Stop Gunicorn
-      shell: ps auxww | grep 'gunicorn' | awk '{print $2}' | xargs kill
+      shell: |
+        pids="$(pgrep -x gunicorn)"
+        if [[ "$pids" != "" ]]
+        then
+          printf "$pids" | xargs kill
+        fi
     - name: Stop Celery
-      shell: ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill
+      shell: |
+        pids=$(pgrep --full 'celery worker')
+        if [[ "$pids" != "" ]]
+        then
+          printf "$pids" | xargs kill
+        fi
     - name: Copy code
       shell: rm -rf /srv/app/ && cp -R /srv/repo/photos /srv/app
     - name: Make 'stop_gunicorn' script executable

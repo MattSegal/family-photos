@@ -27,8 +27,13 @@ echo "Installing requirements."
 
 cd /srv/app/
 
+# Use SIGKILL because gunicorn should be stopped already
 echo "Stopping gunicorn if running"
-ps auxww | grep 'gunicorn' | awk '{print $2}' | xargs kill -9
+pids="$(pgrep --exact gunicorn)";
+if [[ "$pids" != "" ]];
+then
+  printf "$pids" | xargs kill -9;
+fi
 
 echo "Starting gunicorn in daemonized mode"
 gunicorn photos.wsgi:application \
@@ -39,8 +44,13 @@ gunicorn photos.wsgi:application \
   --log-level info \
   --log-file=/srv/gunicorn.log
 
+# Use SIGKILL because celery should be stopped already
 echo "Stopping celery working if running"
-ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+pids=$(pgrep --full 'celery worker')
+if [[ "$pids" != "" ]]
+then
+  printf "$pids" | xargs kill -9
+fi
 
 echo "Starting celery worker in daemonized mode"
 celery worker \

@@ -6,8 +6,8 @@ This app stores family photos in the cloud (AWS) and presents them in a static w
 
 Users can:
 
-- browse photos
-- upload photos
+* browse photos
+* upload photos
 
 
 ## To Do (prioritized)
@@ -27,9 +27,4 @@ Users can:
 
 ## Deployment
 
-/srv/app for Django app
-/srv/env for virtualenv
-/srv/static for staticfiles
-/srv/photos for temp local photo storage
-/srv/gunicorn.log for gunicorn logs
-/srv/celery.log for celery logs
+Deployment is done using Ansible, which configures the server and pulls the latest code from the GitHubs repo's `master` branch. Secrets are AES encrypted in `deploy/secrets.yml`, an example unencrypted secrets file can be found at `deploy/secrets.example.yml`
