@@ -163,7 +163,7 @@
         - python-virtualenv
     - name: Copy Python package requirements
       copy:
-        src: ../photos/requirements/prod.txt
+        src: ../app/requirements/prod.txt
         dest: /srv/requirements.txt
         owner: root
         group: root
