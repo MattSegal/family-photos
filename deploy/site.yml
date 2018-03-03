@@ -198,7 +198,7 @@
           printf "$pids" | xargs kill
         fi
     - name: Copy code
-      shell: rm -rf /srv/app/ && cp -R /srv/repo/photos /srv/app
+      shell: rm -rf /srv/app/ && cp -R /srv/repo/app /srv/app
     - name: Make 'stop_gunicorn' script executable
       file:
           path: /srv/app/scripts/stop_gunicorn.sh
