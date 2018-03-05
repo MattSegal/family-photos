@@ -6,8 +6,9 @@
     - name: Test connection
       ping:
 
-    - apt_repository:
-      repo: 'ppa:certbot/certbot'
+    - name: Add Certbot apt repo
+      apt_repository:
+        repo: ppa:certbot/certbot
 
     - name: Update apt cache
       apt: update_cache=yes

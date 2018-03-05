@@ -22,7 +22,7 @@ server {
 
     # Django static files
     location /static {
-        alias /var/static;
+        alias /srv/static;
     }
 
     location / {

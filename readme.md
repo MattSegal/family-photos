@@ -30,8 +30,9 @@ HTTPS is enabled via NGINX using the LetsEncrypt certbot for the certificate
 
 Create cert
 
-    sudo certbot --nginx -d memories.ninja
+    certbot --nginx -d memories.ninja
+    openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096
 
 Renew expiring cert
 
-    sudo certbot renew
+    certbot renew
