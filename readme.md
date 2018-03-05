@@ -12,7 +12,6 @@ Users can:
 
 ## To Do (prioritized)
 
-* Add better image viewing UI (left / right arrows, cross to exit, animation?)
 * Padding at bottom of album
 * Add login with Google OAuth to sign up / in
 * Auto retry failed uploads
@@ -23,3 +22,16 @@ Users can:
 ## Deployment
 
 Deployment is done using Ansible, which configures the server and pulls the latest code from the GitHubs repo's `master` branch. Secrets are AES encrypted in `deploy/secrets.yml`, an example unencrypted secrets file can be found at `deploy/secrets.example.yml`
+
+
+## HTTPS
+
+HTTPS is enabled via NGINX using the LetsEncrypt certbot for the certificate
+
+Create cert
+
+    sudo certbot --nginx -d memories.ninja
+
+Renew expiring cert
+
+    sudo certbot renew
