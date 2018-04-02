@@ -1,12 +1,10 @@
 from . import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['memories.ninja', '54.252.159.196']
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+ALLOWED_HOSTS = ['memories.ninja', '167.99.78.141']
 
 AWS_STORAGE_BUCKET_NAME = 'memories-ninja-prod'
-
-CELERY_TASK_ALWAYS_EAGER = False
-
 
 # Logging
 LOGGING['root']['handlers'] = ['console', 'sentry']

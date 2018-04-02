@@ -2,9 +2,6 @@ from . import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.2.2']
+ALLOWED_HOSTS = ['*']
 
 AWS_STORAGE_BUCKET_NAME = 'family-photos-dev'
-
-# Celery
-CELERY_TASK_ALWAYS_EAGER = True
