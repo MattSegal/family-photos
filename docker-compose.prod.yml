@@ -12,12 +12,12 @@ services:
             - DJANGO_SETTINGS_MODULE=photos.settings.prod
             - PHOTOS_DB_NAME=photos
             - PHOTOS_DB_PORT=5432
+            - PHOTOS_DB_HOST=$DOCKERHOST
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN
             - PHOTOS_DB_USER
             - PHOTOS_DB_PASSWORD
-            - PHOTOS_DB_HOST
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
     web:
@@ -31,11 +31,11 @@ services:
             - DJANGO_SETTINGS_MODULE=photos.settings.prod
             - PHOTOS_DB_NAME=photos
             - PHOTOS_DB_PORT=5432
+            - PHOTOS_DB_HOST=$DOCKERHOST
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN
             - PHOTOS_DB_USER
             - PHOTOS_DB_PASSWORD
-            - PHOTOS_DB_HOST
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
