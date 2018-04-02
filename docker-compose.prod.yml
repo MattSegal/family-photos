@@ -13,6 +13,11 @@ services:
             - PHOTOS_DB_NAME=photos
             - PHOTOS_DB_PORT=5432
             - PHOTOS_DB_HOST=$DOCKERHOST
+            # Postgres convenience
+            - PGHOST=$PHOTOS_DB_HOST
+            - PGDATABASE=$PHOTOS_DB_NAME
+            - PGUSER=$PHOTOS_DB_USER
+            - PGPASSWORD=$PHOTOS_DB_PASSWORD
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN
@@ -32,6 +37,11 @@ services:
             - PHOTOS_DB_NAME=photos
             - PHOTOS_DB_PORT=5432
             - PHOTOS_DB_HOST=$DOCKERHOST
+            # Postgres convenience
+            - PGHOST=$PHOTOS_DB_HOST
+            - PGDATABASE=$PHOTOS_DB_NAME
+            - PGUSER=$PHOTOS_DB_USER
+            - PGPASSWORD=$PHOTOS_DB_PASSWORD
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN
