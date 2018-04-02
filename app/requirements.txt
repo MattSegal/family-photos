@@ -9,3 +9,4 @@ raven
 gunicorn
 flake8
 isort
+ipython

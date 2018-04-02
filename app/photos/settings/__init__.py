@@ -19,6 +19,7 @@ SECRET_KEY = 'dev-secret-key'
 
 ALLOWED_HOSTS = []
 
+SHELL_PLUS = 'ipython'
 
 # Application definition
 INSTALLED_APPS = [
