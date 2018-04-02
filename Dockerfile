@@ -24,5 +24,3 @@ RUN \
 
 # Mount the codebase
 ADD app /app
-
-#RUN /app/manage.py collectstatic --noinput

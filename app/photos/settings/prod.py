@@ -10,6 +10,8 @@ ALLOWED_HOSTS = [
 ]
 
 AWS_STORAGE_BUCKET_NAME = 'memories-ninja-prod'
+STATICFILES_STORAGE = 'photos.storage.S3Boto3StaticStorage'
+AWS_STATIC_STORAGE_BUCKET_NAME = 'memories-ninja-static'
 
 # Logging
 LOGGING['root']['handlers'] = ['console', 'sentry']

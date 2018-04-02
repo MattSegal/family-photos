@@ -4,6 +4,9 @@ echo "Starting photos app as `whoami`"
 echo "Running migrations"
 ./manage.py migrate
 
+echo "Collecting static files"
+./manage.py collectstatic --noinput
+
 mkdir -p /var/log/gunicorn
 
 echo "Starting gunicorn"
