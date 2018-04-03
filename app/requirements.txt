@@ -10,3 +10,4 @@ gunicorn
 flake8
 isort
 ipython
+django-debug-toolbar

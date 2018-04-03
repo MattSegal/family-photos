@@ -31,10 +31,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'django_extensions',
+    'debug_toolbar',
     'photos'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -161,4 +163,11 @@ LOGGING = {
 }
 
 # Celery debugging
-CELERY_TASK_ALWAYS_EAGER = False
+CELERY_TASK_ALWAYS_EAGER = True
+
+# Django Debug Toolbar
+INTERNAL_IPS = ['127.0.0.1']
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    'SHOW_TEMPLATE_CONTEXT': True,
+}
