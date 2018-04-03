@@ -23,3 +23,6 @@ LOGGING['handlers']['sentry'] = {
 RAVEN_CONFIG = {
     'dsn': os.environ.get('RAVEN_DSN')
 }
+
+INSTALLED_APPS.remove('debug_toolbar')
+MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')
