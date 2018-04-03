@@ -1,6 +1,6 @@
 from . import *
 
-DEBUG = True
+DEBUG = False
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 ALLOWED_HOSTS = [
 	'memories.ninja',
