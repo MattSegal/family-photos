@@ -10,16 +10,16 @@
     </h1>
   </div>
   <div class="images page-wrapper">
-    {% for photo in album.photo_set.all|slice:":4" %}
+    {% for photo in album.top_photos|slice:":4" %}
       <img
         class="thumb"
         height="{{ thumb_height }}px"
         width="{{ thumb_width }}px"
         src="{{ photo.get_thumb_url }}"
       />
-    {% endfor%}
+    {% endfor %}
   </div>
-{% endfor%}
+{% endfor %}
 {% include 'sections/display_modal_include.html' %}
 {% endblock %}
 

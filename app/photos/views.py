@@ -16,13 +16,10 @@ class LandingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        photo_qs = Photo.objects.exclude(file='').order_by('taken_at').only('file')
-        prefetch = Prefetch('photo_set', queryset=photo_qs)
-        albums = Album.objects.prefetch_related(prefetch).all()
         context.update({
             'thumb_height': settings.THUMBNAIL_HEIGHT,
             'thumb_width': settings.THUMBNAIL_WIDTH,
-            'albums': albums,
+            'albums': Album.objects.all(),
         })
         return context
 
