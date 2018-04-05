@@ -2,9 +2,9 @@ from . import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.2.2']
+# Static files
+STATIC_URL = '/static/'
+
+ALLOWED_HOSTS = ['*']
 
 AWS_STORAGE_BUCKET_NAME = 'family-photos-dev'
-
-# Celery
-CELERY_TASK_ALWAYS_EAGER = True

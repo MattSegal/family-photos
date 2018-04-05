@@ -4,6 +4,10 @@ django-extensions
 boto3
 django-storages
 Pillow
-celery
+celery[redis]
 raven
 gunicorn
+flake8
+isort
+ipython
+django-debug-toolbar

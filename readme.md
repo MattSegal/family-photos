@@ -1,5 +1,7 @@
 # Family Photos
 
+https://www.gun.io/blog/fast-as-fuck-django-part-1-using-a-profiler
+
 Currently at [memories.ninja](https://memories.ninja)
 
 This app stores family photos in the cloud (AWS) and presents them in a static webpage.

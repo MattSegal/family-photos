@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from photos.images import thumbnail
 
-app = Celery('photos', broker='amqp://localhost')
+celery_host = os.environ.get('CELERY_HOST')
+app = Celery('photos', broker='redis://{}:6379'.format(celery_host))
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 logging = get_task_logger(__name__)

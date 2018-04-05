@@ -14,13 +14,12 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-
 DEBUG = False
+SECRET_KEY = 'dev-secret-key'
 
 ALLOWED_HOSTS = []
 
+SHELL_PLUS = 'ipython'
 
 # Application definition
 INSTALLED_APPS = [
@@ -32,10 +31,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'django_extensions',
+    'debug_toolbar',
     'photos'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,11 +71,11 @@ WSGI_APPLICATION = 'photos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'photos',
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('PHOTOS_DB_NAME'),
+        'USER': os.environ.get('PHOTOS_DB_USER'),
+        'PASSWORD': os.environ.get('PHOTOS_DB_PASSWORD'),
+        'HOST': os.environ.get('PHOTOS_DB_HOST'),
+        'PORT': os.environ.get('PHOTOS_DB_PORT'),
     }
 }
 
@@ -103,19 +104,18 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files
-STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-STATIC_ROOT = '/srv/static'
 
 # Media storage
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_S3_SECURE_URLS = False
 AWS_QUERYSTRING_AUTH = False
-AWS_S3_ACCESS_KEY_ID = os.environ.get('AWS_S3_ACCESS_KEY_ID')
-AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
-LOCAL_MEDIA_ROOT = '/srv/photos'
+AWS_REGION_NAME = 'ap-southeast-2'
+AWS_S3_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+LOCAL_MEDIA_ROOT = '/photos'
 
 # Image properties
 ALLOWED_EXTENSIONS = ('jpeg', 'jpg')
@@ -162,6 +162,12 @@ LOGGING = {
     },
 }
 
-
-# Celery
+# Celery debugging
 CELERY_TASK_ALWAYS_EAGER = True
+
+# Django Debug Toolbar
+INTERNAL_IPS = ['127.0.0.1']
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    'SHOW_TEMPLATE_CONTEXT': True,
+}

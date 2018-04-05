@@ -1,12 +1,17 @@
 from . import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['memories.ninja', '54.252.159.196']
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+ALLOWED_HOSTS = [
+	'memories.ninja',
+	'167.99.78.141',
+	'127.0.0.1',
+	'localhost',
+]
 
 AWS_STORAGE_BUCKET_NAME = 'memories-ninja-prod'
-
-CELERY_TASK_ALWAYS_EAGER = False
-
+STATICFILES_STORAGE = 'photos.storage.S3Boto3StaticStorage'
+AWS_STATIC_STORAGE_BUCKET_NAME = 'memories-ninja-static'
 
 # Logging
 LOGGING['root']['handlers'] = ['console', 'sentry']
@@ -18,3 +23,6 @@ LOGGING['handlers']['sentry'] = {
 RAVEN_CONFIG = {
     'dsn': os.environ.get('RAVEN_DSN')
 }
+
+INSTALLED_APPS.remove('debug_toolbar')
+MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')

@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+    redis:
+        image: redis
+    worker:
+        image: localhost:5000/photos
+        entrypoint: /app/start-worker.sh
+        environment:
+            - CELERY_HOST=redis
+            - REDIS_HOST=redis
+            - DJANGO_SETTINGS_MODULE=photos.settings.prod
+            - PHOTOS_DB_NAME=photos
+            - PHOTOS_DB_PORT=5432
+            - PHOTOS_DB_HOST=$DOCKERHOST
+            # Postgres convenience
+            - PGHOST=$PHOTOS_DB_HOST
+            - PGDATABASE=$PHOTOS_DB_NAME
+            - PGUSER=$PHOTOS_DB_USER
+            - PGPASSWORD=$PHOTOS_DB_PASSWORD
+            # Pass-through
+            - DJANGO_SECRET_KEY
+            - PHOTOS_RAVEN_DSN
+            - PHOTOS_DB_USER
+            - PHOTOS_DB_PASSWORD
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+    web:
+        image: localhost:5000/photos
+        entrypoint: /app/start-web.sh
+        ports:
+            - 8000:8000
+        environment:
+            - CELERY_HOST=redis
+            - REDIS_HOST=redis
+            - DJANGO_SETTINGS_MODULE=photos.settings.prod
+            - PHOTOS_DB_NAME=photos
+            - PHOTOS_DB_PORT=5432
+            - PHOTOS_DB_HOST=$DOCKERHOST
+            # Postgres convenience
+            - PGHOST=$PHOTOS_DB_HOST
+            - PGDATABASE=$PHOTOS_DB_NAME
+            - PGUSER=$PHOTOS_DB_USER
+            - PGPASSWORD=$PHOTOS_DB_PASSWORD
+            # Pass-through
+            - DJANGO_SECRET_KEY
+            - PHOTOS_RAVEN_DSN
+            - PHOTOS_DB_USER
+            - PHOTOS_DB_PASSWORD
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
