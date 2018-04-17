@@ -14,7 +14,7 @@ services:
             - PHOTOS_DB_PORT=5432
             - PHOTOS_DB_HOST=$DOCKERHOST
             # Postgres convenience
-            - PGHOST=$PHOTOS_DB_HOST
+            - PGHOST=$DOCKERHOST
             - PGDATABASE=$PHOTOS_DB_NAME
             - PGUSER=$PHOTOS_DB_USER
             - PGPASSWORD=$PHOTOS_DB_PASSWORD
@@ -38,7 +38,7 @@ services:
             - PHOTOS_DB_PORT=5432
             - PHOTOS_DB_HOST=$DOCKERHOST
             # Postgres convenience
-            - PGHOST=$PHOTOS_DB_HOST
+            - PGHOST=$DOCKERHOST
             - PGDATABASE=$PHOTOS_DB_NAME
             - PGUSER=$PHOTOS_DB_USER
             - PGPASSWORD=$PHOTOS_DB_PASSWORD

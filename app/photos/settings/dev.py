@@ -1,6 +1,7 @@
 from . import *
 
 DEBUG = True
+SECRET_KEY = 'dev-secret-key'
 
 # Static files
 STATIC_URL = '/static/'
