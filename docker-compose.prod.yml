@@ -5,7 +5,7 @@ services:
         image: redis
     worker:
         image: localhost:5000/photos
-        entrypoint: /app/start-worker.sh
+        command: make worker-prod
         environment:
             - CELERY_HOST=redis
             - REDIS_HOST=redis
@@ -18,6 +18,10 @@ services:
             - PGDATABASE=$PHOTOS_DB_NAME
             - PGUSER=$PHOTOS_DB_USER
             - PGPASSWORD=$PHOTOS_DB_PASSWORD
+            # Papertrail
+            - PAPERTRAIL_HOSTNAME=MemoriesNinja
+            - PAPERTRAIL_URL=$WHATSON_PAPERTRAIL_URL
+            - PAPERTRAIL_PORT=$WHATSON_PAPERTRAIL_PORT
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN
@@ -27,7 +31,7 @@ services:
             - AWS_SECRET_ACCESS_KEY
     web:
         image: localhost:5000/photos
-        entrypoint: /app/start-web.sh
+        command: make web-prod
         ports:
             - 8000:8000
         environment:
@@ -42,6 +46,10 @@ services:
             - PGDATABASE=$PHOTOS_DB_NAME
             - PGUSER=$PHOTOS_DB_USER
             - PGPASSWORD=$PHOTOS_DB_PASSWORD
+            # Papertrail
+            - PAPERTRAIL_HOSTNAME=MemoriesNinja
+            - PAPERTRAIL_URL=$WHATSON_PAPERTRAIL_URL
+            - PAPERTRAIL_PORT=$WHATSON_PAPERTRAIL_PORT
             # Pass-through
             - DJANGO_SECRET_KEY
             - PHOTOS_RAVEN_DSN

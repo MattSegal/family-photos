@@ -9,7 +9,7 @@ services:
         image: redis
     worker:
         image: localhost:5000/photos
-        entrypoint: /app/start-worker.sh
+        command: make worker-local
         build:
             context: .
             dockerfile: Dockerfile
@@ -33,7 +33,7 @@ services:
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     web:
         image: localhost:5000/photos
-        command: ./manage.py runserver 0.0.0.0:8000
+        command: make web-local
         build:
             context: .
             dockerfile: Dockerfile
