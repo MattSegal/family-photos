@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from photos.images import get_s3_key, get_local_filename, thumbnail
-from photos.celery import upload_photo_to_s3
+from photos.tasks import upload_photo_to_s3
 
 logger = logging.getLogger(__name__)
 file_storage = FileSystemStorage(location=settings.LOCAL_MEDIA_ROOT)

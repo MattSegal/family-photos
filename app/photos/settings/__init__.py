@@ -160,9 +160,6 @@ LOGGING = {
     },
 }
 
-# Celery debugging
-CELERY_TASK_ALWAYS_EAGER = True
-
 # Django Debug Toolbar
 INTERNAL_IPS = ['127.0.0.1']
 DEBUG_TOOLBAR_CONFIG = {

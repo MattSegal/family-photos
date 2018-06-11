@@ -11,3 +11,6 @@ flake8
 isort
 ipython
 django-debug-toolbar
+
+# Development
+watchdog

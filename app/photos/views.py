@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from photos.models import Album, Photo
 from photos.forms import PhotoForm
-from photos.celery import upload_photo_to_s3, thumbnail_photo
+from photos.tasks import upload_photo_to_s3, thumbnail_photo
 
 
 class LandingView(TemplateView):
