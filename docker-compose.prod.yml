@@ -6,6 +6,8 @@ services:
     worker:
         image: localhost:5000/photos
         command: make worker-prod
+        volumes:
+          - local-photos:/photos/
         environment:
             - CELERY_HOST=redis
             - REDIS_HOST=redis
@@ -34,6 +36,8 @@ services:
         command: make web-prod
         ports:
             - 8000:8000
+        volumes:
+          - local-photos:/photos/
         environment:
             - CELERY_HOST=redis
             - REDIS_HOST=redis
@@ -57,3 +61,6 @@ services:
             - PHOTOS_DB_PASSWORD
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
+
+volumes:
+    local-photos:
