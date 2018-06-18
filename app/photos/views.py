@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import CreateView
@@ -5,23 +7,33 @@ from django.utils.text import slugify
 from django.db.models import Prefetch
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from rest_framework import viewsets
 
-from photos.models import Album, Photo
-from photos.forms import PhotoForm
-from photos.tasks import upload_photo_to_s3, thumbnail_photo
-
+from .models import Album, Photo
+from .forms import PhotoForm
+from .tasks import upload_photo_to_s3, thumbnail_photo
+from .permissions import IsOwnerOrReadOnly
+from .serializers import AlbumSerializer
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
+        context['bootstrap_data'] = json.dumps({
             'thumb_height': settings.THUMBNAIL_HEIGHT,
             'thumb_width': settings.THUMBNAIL_WIDTH,
-            'albums': Album.objects.all(),
         })
         return context
+
+
+class AlbumViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    permission_classes = (IsOwnerOrReadOnly,)
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
 
 
 class AlbumView(DetailView):

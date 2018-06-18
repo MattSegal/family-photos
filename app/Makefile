@@ -1,4 +1,7 @@
 
+webpack:
+	npm run dev
+
 worker-local:
 	watchmedo \
 	auto-restart \
@@ -49,8 +52,6 @@ web-prod:
 	/var/log/gunicorn/error.log && \
 	echo "Running migrations" && \
 	./manage.py migrate && \
-	echo "Running collectstatic (background)" && \
-	./manage.py collectstatic --noinput &
 	echo "Starting gunicorn" && \
 	gunicorn photos.wsgi:application \
 	--name photos \
