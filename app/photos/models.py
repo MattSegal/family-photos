@@ -14,7 +14,7 @@ class Album(models.Model):
     slug = models.SlugField()
 
     def top_photos(self):
-        return self.photo_set.exclude(file='').order_by('taken_at')
+        return self.photo_set.exclude(file='').order_by('taken_at')[:4]
 
     def __str__(self):
         return self.name

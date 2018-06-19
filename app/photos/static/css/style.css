@@ -18,13 +18,24 @@ time, mark, audio, video {
     font: inherit;
     vertical-align: baseline;
 }
-
-html, body {
+html, body, #app {
     height: 100%;
     width: 100%;
+    font-size: 10px;
 }
-
 body {
     font-family: sans-serif;
     position: relative;
+}
+h1 {
+    font-size: 3rem;
+}
+h2 {
+    font-size: 2.4rem;
+}
+h3 {
+    font-size: 2rem;
+}
+p, li, a {
+    font-size: 1.4rem;
 }

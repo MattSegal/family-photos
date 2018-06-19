@@ -6,12 +6,14 @@ import { store } from 'state'
 import Header from 'components/header'
 import AlbumList from 'components/album-list'
 
+import styles from 'styles/app.css'
+
 class App extends Component {
 
   render() {
     return (
       <Provider store={store}>
-        <div>
+        <div className={styles.app}>
             <Header/>
             <AlbumList/>
         </div>

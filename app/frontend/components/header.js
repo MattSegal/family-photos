@@ -16,7 +16,9 @@ class Header extends Component {
     const { } = this.props
     return (
       <header className={styles.header}>
-        <h1>Memories Ninja</h1>
+        <div className={styles.inner}>
+          <h1>Memories Ninja</h1>
+        </div>
       </header>
     )
   }

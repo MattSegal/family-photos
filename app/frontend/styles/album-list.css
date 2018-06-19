@@ -1,0 +1,48 @@
+@value max_width from 'styles/variables.css';
+
+.albumList {
+    max-width: max_width;
+    margin: 0 auto;
+}
+
+.album {
+    position: relative;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.filter {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.3;
+}
+
+.album:hover .filter {
+    opacity: 0.5;
+}
+
+@media (min-width: 500px) {
+    .album {
+        grid-template-columns: 25% 25% 25% 25%;
+    }
+}
+
+
+.title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 3.5rem;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.thumbnail {
+    /*display: inline-grid;*/
+}
