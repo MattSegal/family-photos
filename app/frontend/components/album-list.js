@@ -21,7 +21,7 @@ class AlbumList extends Component {
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         slug: PropTypes.string.isRequired,
-        top_photos: PropTypes.arrayOf(
+        photos: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.number.isRequired,
             taken_at: PropTypes.string.isRequired,
@@ -46,7 +46,7 @@ class AlbumList extends Component {
     return (
       <div className={styles.albumList}>
         {albums
-          .filter(album => album.top_photos.length > 3)
+          .filter(album => album.photos.length > 3)
           .map((album, idx) => <Album key={idx} {...album} />)
         }
       </div>
@@ -76,7 +76,7 @@ class Album extends Component {
         <div className={styles.album}>
           <div className={styles.filter} style={this.getFilterStyle()}></div>
           <div className={styles.title}>{album.name}</div>
-          {album.top_photos.map((p, i) =>
+          {album.photos.slice(0, 4).map((p, i) =>
             <div key={i}>
               <Thumbnail {...p}/>
             </div>

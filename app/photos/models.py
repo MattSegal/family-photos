@@ -25,9 +25,6 @@ class Album(models.Model):
             .order_by('taken_at')
         )
 
-    def top_photos(self):
-        return self.thumbnailed_photos()[:4]
-
     def __str__(self):
         return self.name
 

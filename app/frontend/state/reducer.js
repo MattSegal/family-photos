@@ -6,22 +6,11 @@ const reducers = {
   }),
   RECEIVE_ALBUM: (state, action) => ({
     ...state,
-    albums: state.albums.map(album => {
-      if (album.id !== action.data.id) {
-        return album
-      }
-      return {
-        ...album,
-        ...action.data,
-      }
-    }),
+    albums: state.albums.map(album => album.id === action.data.id ? action.data : album),
   }),
   RECEIVE_ALBUMS: (state, action) => ({
     ...state,
-    albums: action.data.map(album => ({
-      ...album,
-      photos: [],
-    })),
+    albums: action.data,
   }),
 }
 

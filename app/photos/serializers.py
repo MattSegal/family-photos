@@ -30,15 +30,15 @@ class AlbumListSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     slug = serializers.SlugField(read_only=True)
-    top_photos = serializers.SerializerMethodField()
+    photos = serializers.SerializerMethodField()
 
     class Meta:
         model = Album
-        fields = ('id', 'name', 'slug', 'top_photos')
+        fields = ('id', 'name', 'slug', 'photos')
 
-    def get_top_photos(self, obj):
+    def get_photos(self, obj):
         # Is this an inefficient query? Can we do better?
-        return PhotoSerializer(obj.top_photos(), many=True).data
+        return PhotoSerializer(obj.thumbnailed_photos()[:4], many=True).data
 
 
 class AlbumSerializer(serializers.ModelSerializer):
