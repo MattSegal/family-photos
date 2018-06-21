@@ -1,16 +1,21 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import { actions } from 'state'
 import Thumbnail from 'components/thumbnail'
 import ColorWheel from 'utils/color'
+
+
 import styles from 'styles/album-list.css'
 
 
 class AlbumList extends Component {
 
-  static propTypes ={
+  static propTypes = {
+    setTitle: PropTypes.func.isRequired,
+    listAlbums: PropTypes.func.isRequired,
     albums: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -28,51 +33,66 @@ class AlbumList extends Component {
     ),
   }
 
-  constructor(props) {
-    super(props)
-    this.colorWheel = new ColorWheel(Math.random() * 2 * Math.PI, 0.6, 0.5)
-  }
-
   componentDidMount() {
-    this.props.listAlbums()
-  }
-
-  getFilterStyle = () => {
-    this.colorWheel.rotate(2 * Math.PI / 3)
-    return {
-      backgroundColor: this.colorWheel.asCSS()
+    this.props.setTitle('Memories Ninja')
+    if (this.props.albums.length < 1) {
+      this.props.listAlbums()
     }
   }
 
   render() {
     ColorWheel
     const { albums, settings } = this.props
-    // TODO: Only show albums with 4+ photos
     return (
       <div className={styles.albumList}>
-        { albums
-          .filter(a => a.top_photos.length > 3)
-          .map((a, idx) =>
-            <div key={idx} className={styles.album}>
-              <div className={styles.filter} style={this.getFilterStyle()}></div>
-              <div className={styles.title}>{a.name}</div>
-              {a.top_photos.map((p, i) =>
-                <div key={i} className={styles.thumbnail}>
-                  <Thumbnail {...p}/>
-                </div>
-              )}
-            </div>
-        )}
+        {albums
+          .filter(album => album.top_photos.length > 3)
+          .map((album, idx) => <Album key={idx} {...album} />)
+        }
       </div>
     )
   }
 }
 
 
+class Album extends Component {
+
+  constructor(props) {
+    super(props)
+    this.colorWheel = new ColorWheel(Math.random() * 2 * Math.PI, 0.6, 0.5)
+  }
+
+  getFilterStyle = () => {
+    this.colorWheel.rotate(7 * Math.PI / 12)
+    return {
+      backgroundColor: this.colorWheel.asCSS()
+    }
+  }
+
+  render() {
+    const album = this.props
+    return (
+      <Link to={`/album/${album.slug}`}>
+        <div className={styles.album}>
+          <div className={styles.filter} style={this.getFilterStyle()}></div>
+          <div className={styles.title}>{album.name}</div>
+          {album.top_photos.map((p, i) =>
+            <div key={i}>
+              <Thumbnail {...p}/>
+            </div>
+          )}
+        </div>
+      </Link>
+    )
+  }
+}
+
+
 const mapStateToProps = state => ({
-    albums: state.albums,
+  albums: state.albums,
 })
 const mapDispatchToProps = dispatch => ({
-  listAlbums: () => dispatch(actions.listAlbums())
+  listAlbums: () => dispatch(actions.listAlbums()),
+  setTitle: title => dispatch(actions.setTitle(title)),
 })
 module.exports = connect(mapStateToProps, mapDispatchToProps)(AlbumList)

@@ -1,14 +1,27 @@
 // Reducers
 const reducers = {
-  REQUEST_ALBUMS: (state, action) => ({
+  SET_TITLE: (state, action) => ({
     ...state,
+    title: action.title,
+  }),
+  RECEIVE_ALBUM: (state, action) => ({
+    ...state,
+    albums: state.albums.map(album => {
+      if (album.id !== action.data.id) {
+        return album
+      }
+      return {
+        ...album,
+        ...action.data,
+      }
+    }),
   }),
   RECEIVE_ALBUMS: (state, action) => ({
     ...state,
-    albums: action.data
-  }),
-  ERROR_ALBUMS: (state, action) => ({
-    ...state,
+    albums: action.data.map(album => ({
+      ...album,
+      photos: [],
+    })),
   }),
 }
 

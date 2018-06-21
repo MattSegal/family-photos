@@ -1,23 +1,24 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import styles from 'styles/header.css'
 
 
 class Header extends Component {
 
-  static propTypes ={
+  static propTypes = {
+    title: PropTypes.string.isRequired,
   }
 
   render()
   {
-    const { } = this.props
+    const { title } = this.props
     return (
       <header className={styles.header}>
         <div className={styles.inner}>
-          <h1>Memories Ninja</h1>
+          <Link to="/"><h1>{title}</h1></Link>
         </div>
       </header>
     )
@@ -26,6 +27,7 @@ class Header extends Component {
 
 
 const mapStateToProps = state => ({
+  title: state.title,
 })
 const mapDispatchToProps = dispatch => ({
 })

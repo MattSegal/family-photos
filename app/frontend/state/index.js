@@ -14,6 +14,7 @@ const initialiseState = data => ({
         thumbHeight: data.thumb_height,
         thumbWidth: data.thumb_width,
     },
+    title: 'Memories Ninja',
     albums: []
 })
 

@@ -1,0 +1,24 @@
+@value max_width from 'styles/variables.css';
+
+.album {
+    max-width: max_width;
+    margin: 0 auto;
+    padding-top: 1.5rem;
+}
+
+.message {
+    text-align: center;
+    padding: 3rem 0 2rem 0;
+}
+
+.photos {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    margin: 0 1.5rem 1.5rem 1.5rem;
+}
+
+@media (min-width: 500px) {
+    .photos {
+        grid-template-columns: 25% 25% 25% 25%;
+    }
+}

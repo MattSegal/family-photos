@@ -26,7 +26,7 @@ class PhotoSerializer(serializers.ModelSerializer):
             return ''
 
 
-class AlbumSerializer(serializers.ModelSerializer):
+class AlbumListSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     slug = serializers.SlugField(read_only=True)
@@ -39,4 +39,20 @@ class AlbumSerializer(serializers.ModelSerializer):
     def get_top_photos(self, obj):
         # Is this an inefficient query? Can we do better?
         return PhotoSerializer(obj.top_photos(), many=True).data
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    slug = serializers.SlugField(read_only=True)
+    photos = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Album
+        fields = ('id', 'name', 'slug', 'photos')
+        list_serializer_class = AlbumListSerializer
+
+    def get_photos(self, obj):
+        # Is this an inefficient query? Can we do better?
+        return PhotoSerializer(obj.thumbnailed_photos(), many=True).data
 

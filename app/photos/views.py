@@ -8,12 +8,13 @@ from django.db.models import Prefetch
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .models import Album, Photo
 from .forms import PhotoForm
 from .tasks import upload_photo_to_s3, thumbnail_photo
 from .permissions import IsOwnerOrReadOnly
-from .serializers import AlbumSerializer
+from .serializers import AlbumListSerializer, AlbumSerializer
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -34,6 +35,20 @@ class AlbumViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly,)
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
+
+    def list(self, request, *args, **kwargs):
+        """
+        Use AlbumListSerializer if we request a list view
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = AlbumListSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class AlbumView(DetailView):
