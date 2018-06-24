@@ -15,6 +15,7 @@ const DATA_NOT_FETCHED_YET = 'DATA_NOT_FETCHED_YET'
 class Album extends Component {
 
   static propTypes = {
+    showModal: PropTypes.func.isRequired,
     setTitle: PropTypes.func.isRequired,
     listAlbums: PropTypes.func.isRequired,
     fetchAlbum: PropTypes.func.isRequired,
@@ -84,10 +85,15 @@ class Album extends Component {
     } else if (status === DATA_NOT_FETCHED_YET) {
       return <div className={styles.message}><h2>Loading album...</h2></div>
     }
+
+    const showModal = this.props.showModal(album.photos)
     return (
       <div className={styles.album}>
         <div className={styles.photos}>
-          {album.photos.map((photo, idx) => <div key={idx}><Thumbnail {...photo} /></div>)}
+          {album.photos.map((photo, idx) =>
+            <div key={idx}>
+              <Thumbnail {...photo} showModal={showModal}/>
+            </div>)}
         </div>
       </div>
     )
@@ -96,11 +102,12 @@ class Album extends Component {
 
 
 const mapStateToProps = state => ({
-  albums: state.albums
+  albums: state.albums,
 })
 const mapDispatchToProps = dispatch => ({
     fetchAlbum: (id) => dispatch(actions.fetchAlbum(id)),
     listAlbums: () => dispatch(actions.listAlbums()),
     setTitle: title => dispatch(actions.setTitle(title)),
+    showModal: images => imageId => dispatch(actions.showModal(imageId, images)),
 })
 module.exports = connect(mapStateToProps, mapDispatchToProps)(Album)

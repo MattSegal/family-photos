@@ -15,7 +15,12 @@ const initialiseState = data => ({
         thumbWidth: data.thumb_width,
     },
     title: 'Memories Ninja',
-    albums: []
+    albums: [],
+    modal: {
+        isOpen: false,
+        imageIdx: 0,
+        images: [],
+    }
 })
 
 // Store - assume we have bootstrapData available

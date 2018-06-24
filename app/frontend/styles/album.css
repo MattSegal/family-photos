@@ -6,6 +6,10 @@
     padding-top: 1.5rem;
 }
 
+.noScroll {
+    position: fixed;
+}
+
 .message {
     text-align: center;
     padding: 3rem 0 2rem 0;

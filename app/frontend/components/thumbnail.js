@@ -9,6 +9,7 @@ export default class Thumbnail extends Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     thumb_url: PropTypes.string.isRequired,
+    showModal: PropTypes.func,
   }
 
   getShade = () => {
@@ -17,11 +18,15 @@ export default class Thumbnail extends Component {
   }
 
   render() {
+    const showModal = this.props.showModal ?
+      () => this.props.showModal(this.props.id) :
+      () => {}
     return (
       <img
         className={styles.thumbnail}
         src={this.props.thumb_url}
         style={{backgroundColor: this.getShade()}}
+        onClick={showModal}
       />
     )
   }

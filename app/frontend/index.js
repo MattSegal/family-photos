@@ -8,6 +8,7 @@ import Header from 'components/header'
 import AlbumList from 'components/album-list'
 import Album from 'components/album'
 import ErrorBoundary from 'components/error'
+import ImageModal from 'components/modal'
 
 import styles from 'styles/app.css'
 
@@ -33,6 +34,9 @@ class App extends Component {
                 </ErrorBoundary>
               </Route>
             </Switch>
+            <ErrorBoundary noRender={true}>
+              <ImageModal/>
+            </ErrorBoundary>
           </div>
         </BrowserRouter>
       </Provider>

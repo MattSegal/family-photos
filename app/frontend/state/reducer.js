@@ -12,6 +12,42 @@ const reducers = {
     ...state,
     albums: action.data,
   }),
+  SHOW_MODAL: (state, action) => ({
+    ...state,
+    modal: {
+      isOpen: true,
+      imageIdx: action.images ?
+        action.images.map(i => i.id).indexOf(action.imageId) :
+        null,
+      images: action.images,
+    }
+  }),
+  SCROLL_MODAL: (state, action) => {
+    let imageIdx = state.modal.imageIdx
+    const numImages = state.modal.images.length
+    if (numImages < 1 || imageIdx + action.change < 0) {
+      imageIdx = 0
+    } else if (imageIdx + action.change > numImages - 1) {
+      imageIdx = numImages - 1
+    } else {
+      imageIdx += action.change
+    }
+    return {
+      ...state,
+      modal: {
+        ...state.modal,
+        imageIdx: imageIdx,
+      },
+    }
+  },
+  CLOSE_MODAL: (state, action) => ({
+    ...state,
+    modal: {
+      isOpen: false,
+      imageIdx: 0,
+      images: [],
+    }
+  }),
 }
 
 

@@ -9,7 +9,7 @@ Users can:
 * browse photos
 * upload photos
 
-## To Do (prioritized)
+## To Do
 
 * downloads
     - user can download their photos

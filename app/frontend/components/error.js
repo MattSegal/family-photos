@@ -19,6 +19,9 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      if (this.props.noRender) {
+        return null
+      }
       return (
         <div className={styles.error}>
           <h2>Something broke >:(</h2>

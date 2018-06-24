@@ -23,4 +23,25 @@ module.exports = {
       })
   },
   setTitle: title => ({type: 'SET_TITLE', title: title}),
+  showModal: (imageId, images) => ({type: 'SHOW_MODAL', imageId: imageId, images: images}),
+  closeModal: () => ({type: 'CLOSE_MODAL'}),
+  scrollModal: change => ({type: 'SCROLL_MODAL', change: change}),
+  pressLeft: () => (d, getState) => {
+    const state = getState()
+    if (state.modal.isOpen) {
+      d({type: 'SCROLL_MODAL', change: -1})
+    }
+  },
+  pressRight: () => (d, getState) => {
+    const state = getState()
+    if (state.modal.isOpen) {
+      d({type: 'SCROLL_MODAL', change: 1})
+    }
+  },
+  pressEsc: () => (d, getState) => {
+    const state = getState()
+    if (state.modal.isOpen) {
+      d({type: 'CLOSE_MODAL'})
+    }
+  },
 }
