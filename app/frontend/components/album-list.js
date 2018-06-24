@@ -42,12 +42,12 @@ class AlbumList extends Component {
 
   render() {
     ColorWheel
-    const { albums, settings } = this.props
+    const { albums } = this.props
     return (
       <div className={styles.albumList}>
         {albums
           .filter(album => album.photos.length > 3)
-          .map((album, idx) => <Album key={idx} {...album} />)
+          .map((album, idx) => <Album key={idx} {...album}/>)
         }
       </div>
     )

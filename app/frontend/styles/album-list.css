@@ -27,7 +27,7 @@
     opacity: 0.5;
 }
 
-@media (min-width: 500px) {
+@media (min-width: 650px) {
     .album {
         grid-template-columns: 25% 25% 25% 25%;
     }

@@ -17,6 +17,12 @@ export default class Thumbnail extends Component {
     return `rgb(${shade}, ${shade}, ${shade})`
   }
 
+  getStyle = () => {
+    return {
+      backgroundColor: this.getShade(),
+    }
+  }
+
   render() {
     const showModal = this.props.showModal ?
       () => this.props.showModal(this.props.id) :
@@ -25,7 +31,7 @@ export default class Thumbnail extends Component {
       <img
         className={styles.thumbnail}
         src={this.props.thumb_url}
-        style={{backgroundColor: this.getShade()}}
+        style={this.getStyle()}
         onClick={showModal}
       />
     )

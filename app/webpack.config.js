@@ -1,5 +1,6 @@
 const path = require('path');
 var BundleTracker = require('webpack-bundle-tracker');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: [
@@ -19,7 +20,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -39,6 +40,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new BundleTracker({filename: 'webpack-stats.json'})
+    new BundleTracker({filename: 'webpack-stats.json'}),
+    new MiniCssExtractPlugin(),
   ]
 };

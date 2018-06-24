@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% load render_bundle from webpack_loader %}
 
-{% block head %}{% endblock head %}
+{% block head %}
+{% render_bundle 'main' 'css' %}
+{% endblock head %}
 
 {% block content %}
-<div id="app">Loading...</div>
+<div id="app"><h2>Loading memories...</h2></div>
 {% endblock %}
 
 {% block scripts %}

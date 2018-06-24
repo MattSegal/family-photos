@@ -15,7 +15,7 @@ const initialiseState = data => ({
         thumbWidth: data.thumb_width,
     },
     title: 'Memories Ninja',
-    albums: [],
+    albums: data.albums,
     modal: {
         isOpen: false,
         imageIdx: 0,

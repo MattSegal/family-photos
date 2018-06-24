@@ -21,9 +21,13 @@ class LandingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        albums = Album.objects.all()
+
         context['bootstrap_data'] = json.dumps({
             'thumb_height': settings.THUMBNAIL_HEIGHT,
             'thumb_width': settings.THUMBNAIL_WIDTH,
+            'albums': AlbumListSerializer(albums, many=True).data
         })
         return context
 
