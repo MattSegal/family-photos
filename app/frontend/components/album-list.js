@@ -14,8 +14,10 @@ import styles from 'styles/album-list.css'
 class AlbumList extends Component {
 
   static propTypes = {
+    pageLoaded: PropTypes.func.isRequired,
     setTitle: PropTypes.func.isRequired,
     listAlbums: PropTypes.func.isRequired,
+    loadedPages: PropTypes.arrayOf(PropTypes.string),
     albums: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -33,21 +35,30 @@ class AlbumList extends Component {
     ),
   }
 
+  constructor(props) {
+    super(props)
+    this.seed = Math.random()
+  }
+
   componentDidMount() {
+    window.scrollTo(0, 0)
     this.props.setTitle('Memories Ninja')
     if (this.props.albums.length < 1) {
       this.props.listAlbums()
     }
+    setTimeout(() => this.props.pageLoaded('/'), 3000)
   }
 
   render() {
-    ColorWheel
-    const { albums } = this.props
+    const { albums, loadedPages } = this.props
+    const loaded = loadedPages.includes('/')
     return (
       <div className={styles.albumList}>
         {albums
           .filter(album => album.photos.length > 3)
-          .map((album, idx) => <Album key={idx} {...album}/>)
+          .map((album, idx) =>
+            <Album key={idx} idx={idx} seed={this.seed} album={album} loaded={loaded} />
+          )
         }
       </div>
     )
@@ -57,29 +68,26 @@ class AlbumList extends Component {
 
 class Album extends Component {
 
-  constructor(props) {
-    super(props)
-    this.colorWheel = new ColorWheel(Math.random() * 2 * Math.PI, 0.6, 0.5)
-  }
-
   getFilterStyle = () => {
-    this.colorWheel.rotate(7 * Math.PI / 12)
+    const angle = (
+      (this.props.seed * 2 * Math.PI) +
+      (this.props.idx * Math.PI / 2)
+    ) % (2 * Math.PI)
+    const colorWheel = new ColorWheel(angle, 0.7, 0.5)
     return {
-      backgroundColor: this.colorWheel.asCSS()
+      backgroundColor: colorWheel.asCSS()
     }
   }
 
   render() {
-    const album = this.props
+    const { album, loaded } = this.props
     return (
       <Link to={`/album/${album.slug}`}>
         <div className={styles.album}>
           <div className={styles.filter} style={this.getFilterStyle()}></div>
           <div className={styles.title}>{album.name}</div>
           {album.photos.slice(0, 4).map((p, i) =>
-            <div key={i}>
-              <Thumbnail {...p}/>
-            </div>
+            <Thumbnail key={i} loaded={loaded} {...p}/>
           )}
         </div>
       </Link>
@@ -90,8 +98,10 @@ class Album extends Component {
 
 const mapStateToProps = state => ({
   albums: state.albums,
+  loadedPages: state.loadedPages,
 })
 const mapDispatchToProps = dispatch => ({
+  pageLoaded: page => dispatch(actions.pageLoaded(page)),
   listAlbums: () => dispatch(actions.listAlbums()),
   setTitle: title => dispatch(actions.setTitle(title)),
 })

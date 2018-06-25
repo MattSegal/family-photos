@@ -47,3 +47,37 @@ p, li, a {
     justify-content: center;
     align-items: center;
 }
+
+header {
+    height: 50px;
+    box-shadow: 0px 0px 3px 3px #ccc;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+header .inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+header .inner h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}

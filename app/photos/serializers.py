@@ -31,28 +31,34 @@ class AlbumListSerializer(serializers.ModelSerializer):
     name = serializers.CharField(read_only=True)
     slug = serializers.SlugField(read_only=True)
     photos = serializers.SerializerMethodField()
+    num_photos = serializers.SerializerMethodField()
 
     class Meta:
         model = Album
-        fields = ('id', 'name', 'slug', 'photos')
+        fields = ('id', 'name', 'slug', 'photos', 'num_photos')
 
     def get_photos(self, obj):
         # Is this an inefficient query? Can we do better?
         return PhotoSerializer(obj.thumbnailed_photos()[:4], many=True).data
 
+    def get_num_photos(self, obj):
+        return obj.thumbnailed_photos().count()
 
 class AlbumSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     slug = serializers.SlugField(read_only=True)
     photos = serializers.SerializerMethodField()
+    num_photos = serializers.SerializerMethodField()
 
     class Meta:
         model = Album
-        fields = ('id', 'name', 'slug', 'photos')
+        fields = ('id', 'name', 'slug', 'photos', 'num_photos')
         list_serializer_class = AlbumListSerializer
 
     def get_photos(self, obj):
         # Is this an inefficient query? Can we do better?
         return PhotoSerializer(obj.thumbnailed_photos(), many=True).data
 
+    def get_num_photos(self, obj):
+        return obj.thumbnailed_photos().count()

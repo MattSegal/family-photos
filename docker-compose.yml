@@ -61,7 +61,7 @@ services:
             AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     webpack:
-        image: localhost:5000/whatson
+        image: localhost:5000/photos
         command: make webpack
         build:
             context: .

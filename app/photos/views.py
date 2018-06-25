@@ -1,7 +1,7 @@
 import json
 
 from django.conf import settings
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.utils.text import slugify
 from django.db.models import Prefetch
@@ -16,18 +16,47 @@ from .tasks import upload_photo_to_s3, thumbnail_photo
 from .permissions import IsOwnerOrReadOnly
 from .serializers import AlbumListSerializer, AlbumSerializer
 
-class LandingView(TemplateView):
-    template_name = 'landing.html'
+
+class AppView(TemplateView):
+    template_name = 'app.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         albums = Album.objects.all()
 
-        context['bootstrap_data'] = json.dumps({
+        bootstrap_data = {
             'thumb_height': settings.THUMBNAIL_HEIGHT,
             'thumb_width': settings.THUMBNAIL_WIDTH,
-            'albums': AlbumListSerializer(albums, many=True).data
+            'albums': AlbumListSerializer(albums, many=True).data,
+            'title': 'Memories Ninja'
+        }
+        bootstrap_data.update(kwargs.get('bootstrap_data', {}))
+        context['bootstrap_data'] = json.dumps(bootstrap_data)
+        context['title'] = 'Memories Ninja'
+        return context
+
+
+class LandingView(AppView):
+    pass
+
+
+class AlbumView(AppView):
+
+    def get_context_data(self, **kwargs):
+        slug = kwargs.get('slug')
+        try:
+            album = Album.objects.get(slug=slug)
+            title = album.name
+        except Album.DoesNotExist:
+            title = 'Not Found'
+
+        kwargs['bootstrap_data'] = {
+            'title': title
+        }
+
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'title': title
         })
         return context
 
@@ -53,29 +82,6 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
         serializer = AlbumListSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class AlbumView(DetailView):
-    model = Album
-    template_name = 'album.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        album_photos = (
-            Photo.objects
-            .filter(album=self.object)
-            .exclude(file='')
-            .order_by('taken_at')
-            .all()
-            .only('file')
-        )
-
-        context.update({
-            'thumb_height': settings.THUMBNAIL_HEIGHT,
-            'thumb_width': settings.THUMBNAIL_WIDTH,
-            'photos': album_photos,
-        })
-        return context
 
 
 class CreateAlbumView(CreateView):

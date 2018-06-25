@@ -6,7 +6,16 @@
 {% endblock head %}
 
 {% block content %}
-<div id="app"><h2>Loading memories...</h2></div>
+<div id="app">
+  <header>
+    <div class="inner">
+      <h1>{{ title }}</h1>
+    </div>
+  </header>
+  <div class="content">
+    <h2>Loading memories...</h2>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

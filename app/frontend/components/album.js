@@ -15,16 +15,19 @@ const DATA_NOT_FETCHED_YET = 'DATA_NOT_FETCHED_YET'
 class Album extends Component {
 
   static propTypes = {
+    pageLoaded: PropTypes.func.isRequired,
     showModal: PropTypes.func.isRequired,
     setTitle: PropTypes.func.isRequired,
     listAlbums: PropTypes.func.isRequired,
     fetchAlbum: PropTypes.func.isRequired,
+    loadedPages: PropTypes.arrayOf(PropTypes.string),
     slug: PropTypes.string.isRequired,
     albums: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         slug: PropTypes.string.isRequired,
+        num_photos: PropTypes.number.isRequired,
         photos: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.number.isRequired,
@@ -56,6 +59,7 @@ class Album extends Component {
   }
 
   componentDidMount() {
+    window.scrollTo(0, 0)
     if (this.state.status === DATA_NOT_FETCHED_YET) {
       this.props.listAlbums()
       .then(() => {
@@ -70,30 +74,34 @@ class Album extends Component {
           .then(() => this.setState(this.findAlbum()))
         }
       })
-    } else {
+    } else if (this.state.status === FOUND) {
       const { album } = this.state
       this.props.setTitle(album.name)
       this.props.fetchAlbum(album.id)
       .then(() => this.setState(this.findAlbum()))
+    } else if (this.state.status === NOT_FOUND) {
+      // Do nothing
     }
+    setTimeout(() => this.props.pageLoaded(this.props.slug), 3000)
   }
 
   render() {
+    const { loadedPages, slug } = this.props
     const { album, status } = this.state
-    if (status === NOT_FOUND) {
-      return <div className={styles.message}><h2>Album not found</h2></div>
-    } else if (status === DATA_NOT_FETCHED_YET) {
-      return <div className={styles.message}><h2>Loading album...</h2></div>
+    const loaded = loadedPages.includes(slug)
+    if (status === NOT_FOUND || status === DATA_NOT_FETCHED_YET) {
+      return null
     }
-
     const showModal = this.props.showModal(album.photos)
     return (
       <div className={styles.album}>
         <div className={styles.photos}>
           {album.photos.map((photo, idx) =>
-            <div key={idx}>
-              <Thumbnail {...photo} showModal={showModal}/>
-            </div>)}
+            <Thumbnail key={idx} {...photo} showModal={showModal} loaded={loaded}/>
+          )}
+          {Array(album.num_photos - album.photos.length).fill(0).map((zero, idx) =>
+            <Thumbnail key={album.photos.length + idx}/>
+          )}
         </div>
       </div>
     )
@@ -103,8 +111,10 @@ class Album extends Component {
 
 const mapStateToProps = state => ({
   albums: state.albums,
+  loadedPages: state.loadedPages,
 })
 const mapDispatchToProps = dispatch => ({
+    pageLoaded: page => dispatch(actions.pageLoaded(page)),
     fetchAlbum: (id) => dispatch(actions.fetchAlbum(id)),
     listAlbums: () => dispatch(actions.listAlbums()),
     setTitle: title => dispatch(actions.setTitle(title)),

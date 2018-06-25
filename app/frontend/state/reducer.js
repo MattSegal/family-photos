@@ -1,5 +1,12 @@
 // Reducers
 const reducers = {
+  PAGE_LOADED: (state, action) => ({
+    ...state,
+    // Really convoluted way to ensure unqiue values
+    loadedPages: [...state.loadedPages, action.page].filter(
+      (value, index, self) => self.indexOf(value) === index
+    ),
+  }),
   SET_TITLE: (state, action) => ({
     ...state,
     title: action.title,

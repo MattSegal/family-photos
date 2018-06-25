@@ -10,7 +10,7 @@ router.register('album', views.AlbumViewSet)
 
 urlpatterns = [
     path('', views.LandingView.as_view(), name='landing'),
-    path('album/<slug:slug>/', views.LandingView.as_view(), name='album-detail'),
+    path('album/<slug:slug>/', views.AlbumView.as_view(), name='album-detail'),
     path('api/', include(router.urls)),
     path('album/create/success/', views.CreateAlbumSuccessView.as_view(), name='album-created'),
     path('album/create/', views.CreateAlbumView.as_view(), name='album-create'),
