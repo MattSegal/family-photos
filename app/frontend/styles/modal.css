@@ -1,20 +1,22 @@
+@value header_height from 'styles/variables.css';
+
 .modal {
     display: flex;
     justify-content: center;
     align-items: center;
     position: fixed;
-    top: 0;
+    top: header_height;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.85);
+    z-index: 4
 }
 
 .image {
     max-height: 100%;
     max-width: 100%;
     background-color: #ddd;
-    z-index: 1;
 }
 
 .loading {
@@ -69,13 +71,13 @@
 .close {
     /* duplicated */
     font-size: 50px;
-    text-shadow: 2px 2px #333;
+    text-shadow: 1px 2px 5px #000;
     cursor: pointer;
     color: #fff;
     z-index: 2;
     user-select: none;
 
     position: fixed;
-    top: 55px;
-    right: 20px;
+    top: 50px;
+    right: 15px;
 }
