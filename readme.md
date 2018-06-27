@@ -26,6 +26,8 @@ Users can:
     - auto retry uploads
     - uploaded photos show nicer "not thumbnail" if not loading
     - ensure dedupe works
+* thumbnailing
+    - improve bounding box
 * admin
     - replace 'review' page with admin commands
     - change timezone to Melbourne/Australia

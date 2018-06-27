@@ -32,7 +32,7 @@ class Upload extends Component {
     // can browse or add more uploads while uploading
     // auto retry uploads
     // uploaded photos show nicer "not thumbnail" if not loading
-    //
+    // validate JPEG content type client side
     //<script type="text/javascript" src="{% static 'js/vendor/jquery-1.9.1.min.js' %}"></script>
     //<script type="text/javascript" src="{% static 'js/vendor/jquery.ui.widget.js' %}"></script>
     //<script type="text/javascript" src="{% static 'js/vendor/jquery.fileupload.js' %}"></script>
