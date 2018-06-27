@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.utils.text import slugify
-from django.db.models import Prefetch
+from django.db.models import Max
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from rest_framework import viewsets
@@ -22,7 +22,11 @@ class AppView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        albums = Album.objects.all()
+        albums = (
+            Album.objects.all().prefetch_related('photo_set')
+            .annotate(latest_photo=Max('photo__thumbnailed_at'))
+            .order_by('-latest_photo')
+        )
 
         bootstrap_data = {
             'thumb_height': settings.THUMBNAIL_HEIGHT,

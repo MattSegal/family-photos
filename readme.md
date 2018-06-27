@@ -28,12 +28,12 @@ Users can:
     - ensure dedupe works
 * thumbnailing
     - improve bounding box
+    - detect duplicates
+    - delete duplicates in the same album
 * admin
     - replace 'review' page with admin commands
     - change timezone to Melbourne/Australia
     - album view
-* display
-    - order albumns by latest photo
 
 
 ## Deployment and hosting
