@@ -49,7 +49,7 @@ p, li, a {
 }
 
 header {
-    height: 50px;
+    min-height: 50px;
     box-shadow: 0px 0px 3px 3px #ccc;
     background-color: #fff;
     position: fixed;
@@ -66,7 +66,7 @@ header .inner {
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    height: 100%;
+    height: 50px;
 }
 
 header .inner h1 {

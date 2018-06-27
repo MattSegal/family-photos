@@ -7,6 +7,7 @@ import { store } from 'state'
 import Header from 'components/header'
 import AlbumList from 'components/album-list'
 import Album from 'components/album'
+import Upload from 'components/upload'
 import ErrorBoundary from 'components/error'
 import ImageModal from 'components/modal'
 
@@ -23,11 +24,16 @@ class App extends Component {
               <Header/>
             </ErrorBoundary>
             <Switch>
-              <Route path="/album/:slug" component={({match}) =>
+              <Route path="/album/:slug/" component={({match}) =>
                 <ErrorBoundary>
                   <Album slug={match.params.slug}/>
                 </ErrorBoundary>
               }/>
+              <Route path="/upload/">
+                <ErrorBoundary>
+                  <Upload/>
+                </ErrorBoundary>
+              </Route>
               <Route path="/">
                 <ErrorBoundary>
                   <AlbumList/>

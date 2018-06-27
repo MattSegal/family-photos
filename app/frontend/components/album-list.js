@@ -82,7 +82,7 @@ class Album extends Component {
   render() {
     const { album, loaded } = this.props
     return (
-      <Link to={`/album/${album.slug}`}>
+      <Link to={`/album/${album.slug}/`}>
         <div className={styles.album}>
           <div className={styles.filter} style={this.getFilterStyle()}></div>
           <div className={styles.title}>{album.name}</div>

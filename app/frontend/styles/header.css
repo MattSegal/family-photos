@@ -2,7 +2,7 @@
 @value header_height, max_width from 'styles/variables.css';
 
 .header {
-    height: header_height;
+    min-height: header_height;
     box-shadow: 0px 0px 3px 3px #ccc;
     background-color: #fff;
     position: fixed;
@@ -12,6 +12,10 @@
     z-index: 5;
 }
 
+.padding {
+    height: 1.5rem;
+}
+
 .inner {
     max-width: max_width;
     margin: 0 auto;
@@ -19,7 +23,8 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    height: 100%;
+    justify-content: space-between;
+    height: header_height;
 }
 
 .header h1 {
@@ -30,4 +35,45 @@
 .header a {
     text-decoration: none;
     color: #333;
+}
+
+.hamburger {
+    position: relative;
+    height: 90%;
+    width: 30px;
+    cursor: pointer;
+}
+
+.hamburger .bar {
+    position: absolute;
+    background-color: #444;
+    height: 3px;
+    width: 100%;
+    border-radius: 3px;
+    transform: translateY(-50%);
+}
+
+.hamburger .bar:nth-child(0) {
+    top: 0;
+}
+
+.hamburger .bar:nth-child(1) {
+    top: 50%;
+}
+
+.hamburger .bar:nth-child(2) {
+    top: 100%;
+}
+
+
+.tray {
+    max-width: max_width;
+    margin: 0 auto;
+    padding: 0rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tray a {
+    padding: 0.8rem;
 }

@@ -1,0 +1,10 @@
+@value max_width from 'styles/variables.css';
+
+.wrapper {
+    max-width: max_width;
+    margin: 0 auto;
+}
+
+.inner {
+    margin: 0 1.5rem 1.5rem 1.5rem;
+}

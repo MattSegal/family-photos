@@ -6,13 +6,21 @@ import { actions } from 'state'
 
 import styles from 'styles/modal.css'
 
-
 class ImageModalInner extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: false,
+      loaded: []
+    }
+  }
 
   componentDidMount() {
     // Lock body scroll
     const body = document.getElementsByTagName('body')[0]
     body.setAttribute('style', 'overflow: hidden;')
+    setTimeout(() => this.setState({ loading: true }), 200)
   }
 
   componentWillUnmount() {
@@ -21,25 +29,49 @@ class ImageModalInner extends Component {
     body.setAttribute('style', '')
   }
 
+  handleScroll = direction => {
+    const { scrollModal } = this.props
+    this.setState({ loading: true })
+    scrollModal(direction)
+  }
+
+  onLoad = e => {
+    const { images, imageIdx } = this.props
+    const src = images[imageIdx].display_url
+    this.setState({
+      loading: false,
+      loaded: [...this.state.loaded, src]
+    })
+  }
+
   render() {
-    const { images, imageIdx, closeModal, scrollModal } = this.props
+    const { images, imageIdx, closeModal } = this.props
+    const src = images[imageIdx].display_url
+    const loaded = this.state.loaded.includes(src)
+    const loadingText = this.state.loading
     return (
       <div className={styles.modal}>
         <div onClick={closeModal} className={styles.close}>&times;</div>
         <div
-          onClick={() => scrollModal(1)}
+          onClick={() => this.handleScroll(1)}
           className={styles.right}>
             &gt;
         </div>
         <div
-          onClick={() => scrollModal(-1)}
+          onClick={() => this.handleScroll(-1)}
           className={styles.left}>
             &lt;
         </div>
-        <div className={styles.loading}>Loading...</div>
+        <div className={`${styles.loading} ${loadingText && styles.loadingVisible}`}>
+          Loading...
+        </div>
+        <div className={styles.counter}>
+          {imageIdx + 1} / {images.length}
+        </div>
         <img
-          className={styles.image}
-          src={images[imageIdx].display_url}
+          onLoad={this.onLoad}
+          className={`${styles.image} ${loaded && styles.imageLoaded}`}
+          src={src}
         />
       </div>
     )

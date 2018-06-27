@@ -17,6 +17,9 @@ const initialiseState = data => ({
     title: data.title,
     albums: data.albums,
     loadedPages: [],
+    header: {
+        trayOpen: false,
+    },
     modal: {
         isOpen: false,
         imageIdx: 0,

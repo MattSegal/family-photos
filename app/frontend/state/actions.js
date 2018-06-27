@@ -2,6 +2,7 @@ import api from './api'
 
 module.exports = {
   // Redux's store.dispatch is aliased to 'd' for brevity
+  toggleTray: () => ({type: 'TOGGLE_TRAY'}),
   pageLoaded: page => ({type: 'PAGE_LOADED', page: page}),
   fetchAlbum: id => d => {
     d({type: 'REQUEST_API'})

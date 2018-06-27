@@ -19,7 +19,6 @@ Users can:
     - photo owners
     - show / hide / soft delete photo
     - flag dated photos
-* single page app
 * uploads
     - better upload validation (server side, client side)
     - more optimistic upload success
@@ -33,8 +32,6 @@ Users can:
     - album view
 * display
     - order albumns by latest photo
-    - hide albums with no photo
-    - nice pre-app loading
 
 
 ## Deployment and hosting

@@ -1,5 +1,12 @@
 // Reducers
 const reducers = {
+  TOGGLE_TRAY: (state, action) => ({
+    ...state,
+    header: {
+      ...state.header,
+      trayOpen: !state.header.trayOpen,
+    }
+  }),
   PAGE_LOADED: (state, action) => ({
     ...state,
     // Really convoluted way to ensure unqiue values

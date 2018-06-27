@@ -33,6 +33,7 @@ class AppView(TemplateView):
         bootstrap_data.update(kwargs.get('bootstrap_data', {}))
         context['bootstrap_data'] = json.dumps(bootstrap_data)
         context['title'] = 'Memories Ninja'
+        context['albums'] = albums
         return context
 
 
@@ -55,10 +56,37 @@ class AlbumView(AppView):
         }
 
         context = super().get_context_data(**kwargs)
-        context.update({
-            'title': title
-        })
+        context['title'] = title
         return context
+
+
+class UploadView(AppView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Uploads'
+        return context
+
+    def post(self, request):
+        try:
+            title = request.FILES['local_file']._name
+        except (IndexError, KeyError, AttributeError):
+            title = None
+
+        post_data = request.POST.copy()
+        post_data['title'] = title
+
+        form = PhotoForm(post_data, request.FILES)
+        if form.is_valid():
+            try:
+                photo = form.save()
+            except Photo.AlreadyUploaded:
+                pass
+
+            data = {'is_valid': True}
+        else:
+            data = {'is_valid': False, 'errors': form.errors}
+        return JsonResponse(data)
 
 
 class AlbumViewSet(viewsets.ModelViewSet):
@@ -98,35 +126,6 @@ class CreateAlbumView(CreateView):
 class CreateAlbumSuccessView(TemplateView):
     template_name = 'album_success.html'
 
-
-class UploadView(TemplateView):
-    template_name = 'upload.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['albums'] = Album.objects.all()
-        return context
-
-    def post(self, request):
-        try:
-            title = request.FILES['local_file']._name
-        except (IndexError, KeyError, AttributeError):
-            title = None
-
-        post_data = request.POST.copy()
-        post_data['title'] = title
-
-        form = PhotoForm(post_data, request.FILES)
-        if form.is_valid():
-            try:
-                photo = form.save()
-            except Photo.AlreadyUploaded:
-                pass
-
-            data = {'is_valid': True}
-        else:
-            data = {'is_valid': False, 'errors': form.errors}
-        return JsonResponse(data)
 
 
 class ReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):

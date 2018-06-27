@@ -16,7 +16,12 @@
 .image {
     max-height: 100%;
     max-width: 100%;
-    background-color: #ddd;
+    z-index: 1;
+    opacity: 0;
+}
+
+.imageLoaded {
+    opacity: 1;
 }
 
 .loading {
@@ -25,12 +30,31 @@
     font-weight: bold;
     top: 50%;
     left: 50%;
-    transform: translate(-40%, -50%);
-    font-size: 1.6rem;
-    opacity: 0;
+    transform: translate(-50%, 50%);
+    font-size: 2rem;
     transition: opacity .3s ease 0.3s;
+    opacity: 0;
 }
 
+.loadingVisible {
+    opacity: 1;
+}
+
+
+.counter {
+    /* duplicated */
+    font-size: 14px;
+    text-shadow: 2px 2px #333;
+    cursor: pointer;
+    color: #fff;
+    z-index: 2;
+    user-select: none;
+
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
 .left {
     /* duplicated */
