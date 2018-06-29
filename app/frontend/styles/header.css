@@ -1,0 +1,79 @@
+@value black from 'styles/variables.css';
+@value header_height, max_width from 'styles/variables.css';
+
+.header {
+    min-height: header_height;
+    box-shadow: 0px 0px 3px 3px #ccc;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+}
+
+.padding {
+    height: 1.5rem;
+}
+
+.inner {
+    max-width: max_width;
+    margin: 0 auto;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: header_height;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.header a {
+    text-decoration: none;
+    color: #333;
+}
+
+.hamburger {
+    position: relative;
+    height: 90%;
+    width: 30px;
+    cursor: pointer;
+}
+
+.hamburger .bar {
+    position: absolute;
+    background-color: #444;
+    height: 3px;
+    width: 100%;
+    border-radius: 3px;
+    transform: translateY(-50%);
+}
+
+.hamburger .bar:nth-child(0) {
+    top: 0;
+}
+
+.hamburger .bar:nth-child(1) {
+    top: 50%;
+}
+
+.hamburger .bar:nth-child(2) {
+    top: 100%;
+}
+
+
+.tray {
+    max-width: max_width;
+    margin: 0 auto;
+    padding: 0rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tray a {
+    padding: 0.8rem;
+}

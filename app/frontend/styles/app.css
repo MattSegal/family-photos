@@ -1,0 +1,9 @@
+@value header_height from 'styles/variables.css';
+
+.app {
+    color: #333;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: header_height;
+}

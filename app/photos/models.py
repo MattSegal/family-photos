@@ -2,6 +2,7 @@ import logging
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 from photos.images import get_s3_key, get_local_filename, thumbnail
 from photos.tasks import upload_photo_to_s3
@@ -13,8 +14,16 @@ class Album(models.Model):
     name = models.CharField(max_length=25)
     slug = models.SlugField()
 
-    def top_photos(self):
-        return self.photo_set.exclude(file='').order_by('taken_at')
+    def thumbnailed_photos(self):
+        return (
+            self.photo_set
+            .exclude(
+                Q(file='') |
+                Q(file__isnull=True) |
+                Q(thumbnailed_at__isnull=True)
+            )
+            .order_by('taken_at')
+        )
 
     def __str__(self):
         return self.name
@@ -64,6 +73,8 @@ class Photo(models.Model):
                     msg += '. File is present on S3.'
                 logger.info(msg)
                 raise Photo.AlreadyUploaded(msg)
+            else:
+                logger.info('Saving new photo with local filename %s', local_filename)
 
         super().save(*args, **kwargs)
 

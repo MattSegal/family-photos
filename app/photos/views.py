@@ -1,73 +1,74 @@
+import json
+
 from django.conf import settings
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.utils.text import slugify
-from django.db.models import Prefetch
+from django.db.models import Max
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from rest_framework import viewsets
+from rest_framework.response import Response
 
-from photos.models import Album, Photo
-from photos.forms import PhotoForm
-from photos.tasks import upload_photo_to_s3, thumbnail_photo
-
-
-class LandingView(TemplateView):
-    template_name = 'landing.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'thumb_height': settings.THUMBNAIL_HEIGHT,
-            'thumb_width': settings.THUMBNAIL_WIDTH,
-            'albums': Album.objects.all(),
-        })
-        return context
+from .models import Album, Photo
+from .forms import PhotoForm
+from .tasks import upload_photo_to_s3, thumbnail_photo
+from .permissions import IsOwnerOrReadOnly
+from .serializers import AlbumListSerializer, AlbumSerializer
 
 
-class AlbumView(DetailView):
-    model = Album
-    template_name = 'album.html'
+class AppView(TemplateView):
+    template_name = 'app.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        album_photos = (
-            Photo.objects
-            .filter(album=self.object)
-            .exclude(file='')
-            .order_by('taken_at')
-            .all()
-            .only('file')
+        albums = (
+            Album.objects.all().prefetch_related('photo_set')
+            .annotate(latest_photo=Max('photo__thumbnailed_at'))
+            .order_by('-latest_photo')
         )
 
-        context.update({
+        bootstrap_data = {
             'thumb_height': settings.THUMBNAIL_HEIGHT,
             'thumb_width': settings.THUMBNAIL_WIDTH,
-            'photos': album_photos,
-        })
+            'albums': AlbumListSerializer(albums, many=True).data,
+            'title': 'Memories Ninja'
+        }
+        bootstrap_data.update(kwargs.get('bootstrap_data', {}))
+        context['bootstrap_data'] = json.dumps(bootstrap_data)
+        context['title'] = 'Memories Ninja'
+        context['albums'] = albums
         return context
 
 
-class CreateAlbumView(CreateView):
-    template_name = 'album_create.html'
-    success_url = '/album/create/success/'
-    model = Album
-    fields = ['name']
-
-    def form_valid(self, form):
-         form.instance.slug = slugify(form.instance.name)
-         return super(CreateAlbumView, self).form_valid(form)
+class LandingView(AppView):
+    pass
 
 
-class CreateAlbumSuccessView(TemplateView):
-    template_name = 'album_success.html'
+class AlbumView(AppView):
+
+    def get_context_data(self, **kwargs):
+        slug = kwargs.get('slug')
+        try:
+            album = Album.objects.get(slug=slug)
+            title = album.name
+        except Album.DoesNotExist:
+            title = 'Not Found'
+
+        kwargs['bootstrap_data'] = {
+            'title': title
+        }
+
+        context = super().get_context_data(**kwargs)
+        context['title'] = title
+        return context
 
 
-class UploadView(TemplateView):
-    template_name = 'upload.html'
+class UploadView(AppView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['albums'] = Album.objects.all()
+        context['title'] = 'Uploads'
         return context
 
     def post(self, request):
@@ -85,35 +86,32 @@ class UploadView(TemplateView):
                 photo = form.save()
             except Photo.AlreadyUploaded:
                 pass
-
             data = {'is_valid': True}
+            status = 200
         else:
             data = {'is_valid': False, 'errors': form.errors}
-        return JsonResponse(data)
+            status = 400
+        return JsonResponse(data, status=status)
 
 
-class ReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    login_url = '/admin/login/'
-    redirect_field_name = 'next'
-    template_name = 'review.html'
+class AlbumViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    permission_classes = (IsOwnerOrReadOnly,)
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
 
-    def test_func(self):
-        return self.request.user.is_superuser
+    def list(self, request, *args, **kwargs):
+        """
+        Use AlbumListSerializer if we request a list view
+        """
+        queryset = self.filter_queryset(self.get_queryset())
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
-        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
-        context['not_uploaded_photos'] = not_uploaded_photos
-        context['not_thumbnailed_photos'] = not_thumbnailed_photos
-        return context
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-    def post(self, request):
-        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
-        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
-        for p in not_thumbnailed_photos:
-            thumbnail_photo.delay(p.pk)
-        for p in not_uploaded_photos:
-            upload_photo_to_s3.delay(p.pk)
-
-        return HttpResponseRedirect('/review/')
+        serializer = AlbumListSerializer(queryset, many=True)
+        return Response(serializer.data)

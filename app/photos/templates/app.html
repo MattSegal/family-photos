@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+
+{% block head %}
+{% render_bundle 'main' 'css' %}
+{% endblock head %}
+
+{% block content %}
+<div id="app">
+  <header>
+    <div class="inner">
+      <h1>{{ title }}</h1>
+    </div>
+  </header>
+  <div class="content">
+    <h2>Loading memories...</h2>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    let bootstrapData = JSON.parse('{{bootstrap_data | escapejs }}')
+</script>
+{% render_bundle 'main' 'js' %}
+{% endblock %}

@@ -1,16 +1,24 @@
+# Backend
 django
 psycopg2
-django-extensions
 boto3
-django-storages
 Pillow
 celery[redis]
 raven
 gunicorn
+django-storages
+djangorestframework
+
+# Frontend
+whitenoise
+django-webpack-loader
+
+# Admin
+django-extensions
+ipython
+
+# Dev
+django-debug-toolbar
 flake8
 isort
-ipython
-django-debug-toolbar
-
-# Development
 watchdog
