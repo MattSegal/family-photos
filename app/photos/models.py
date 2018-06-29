@@ -73,6 +73,8 @@ class Photo(models.Model):
                     msg += '. File is present on S3.'
                 logger.info(msg)
                 raise Photo.AlreadyUploaded(msg)
+            else:
+                logger.info('Saving new photo with local filename %s', local_filename)
 
         super().save(*args, **kwargs)
 

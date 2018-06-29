@@ -1,0 +1,16 @@
+.select {
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    font-size: 1.4rem;
+}
+
+.select:hover {
+    cursor: pointer;
+    box-shadow: 1px 1px 5px #666;
+}
+
+.select[disabled] {
+    color: #999;
+    border: solid 1px #eee;
+}

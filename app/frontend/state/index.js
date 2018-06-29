@@ -5,9 +5,10 @@ import { createLogger }  from 'redux-logger'
 import reducer from './reducer'
 import actions from './actions'
 import listener from './listener';
+import { uploadMiddleware } from './middleware'
 
 const loggerMiddleware = createLogger()
-const middleware = applyMiddleware(thunkMiddleware, loggerMiddleware)
+const middleware = applyMiddleware(uploadMiddleware, thunkMiddleware, loggerMiddleware)
 
 const initialiseState = data => ({
     settings: {
@@ -24,7 +25,13 @@ const initialiseState = data => ({
         isOpen: false,
         imageIdx: 0,
         images: [],
-    }
+    },
+    upload: {
+        album: '',
+        images: [],
+        uploadValid: false,
+        uploading: false,
+    },
 })
 
 // Store - assume we have bootstrapData available

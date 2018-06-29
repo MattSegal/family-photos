@@ -1,0 +1,17 @@
+.file {
+    font-size: 1.4rem;
+    background-color: #fff;
+    border: solid 1px #999;
+    padding: 7px 15px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.file input {
+    display: none;
+}
+
+.file:hover {
+    cursor: pointer;
+    box-shadow: 1px 1px 5px #666;
+}

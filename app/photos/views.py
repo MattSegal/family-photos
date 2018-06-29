@@ -86,11 +86,12 @@ class UploadView(AppView):
                 photo = form.save()
             except Photo.AlreadyUploaded:
                 pass
-
             data = {'is_valid': True}
+            status = 200
         else:
             data = {'is_valid': False, 'errors': form.errors}
-        return JsonResponse(data)
+            status = 400
+        return JsonResponse(data, status=status)
 
 
 class AlbumViewSet(viewsets.ModelViewSet):
@@ -114,46 +115,3 @@ class AlbumViewSet(viewsets.ModelViewSet):
 
         serializer = AlbumListSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class CreateAlbumView(CreateView):
-    template_name = 'album_create.html'
-    success_url = '/album/create/success/'
-    model = Album
-    fields = ['name']
-
-    def form_valid(self, form):
-         form.instance.slug = slugify(form.instance.name)
-         return super(CreateAlbumView, self).form_valid(form)
-
-
-class CreateAlbumSuccessView(TemplateView):
-    template_name = 'album_success.html'
-
-
-
-class ReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    login_url = '/admin/login/'
-    redirect_field_name = 'next'
-    template_name = 'review.html'
-
-    def test_func(self):
-        return self.request.user.is_superuser
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
-        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
-        context['not_uploaded_photos'] = not_uploaded_photos
-        context['not_thumbnailed_photos'] = not_thumbnailed_photos
-        return context
-
-    def post(self, request):
-        not_uploaded_photos = Photo.objects.filter(uploaded_at__isnull=True)
-        not_thumbnailed_photos = Photo.objects.filter(thumbnailed_at__isnull=True).difference(not_uploaded_photos)
-        for p in not_thumbnailed_photos:
-            thumbnail_photo.delay(p.pk)
-        for p in not_uploaded_photos:
-            upload_photo_to_s3.delay(p.pk)
-
-        return HttpResponseRedirect('/review/')

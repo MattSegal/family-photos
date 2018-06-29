@@ -26,6 +26,13 @@ Users can:
     - auto retry uploads
     - uploaded photos show nicer "not thumbnail" if not loading
     - ensure dedupe works
+
+    // server-side
+    // Ensure proper dedupe works
+    // more optimistic upload success
+    // Allow add files while uploading?
+    // auto retry uploads
+
 * thumbnailing
     - improve bounding box
     - detect duplicates
