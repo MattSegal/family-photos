@@ -1,1 +1,0 @@
-{"status":"done","error":"ModuleNotFoundError","message":"Module not found: Error: Can't resolve 'axios' in '/app/frontend/state'","chunks":{"main":[{"name":"main.css","path":"/app/build/main.css"},{"name":"bundle.js","path":"/app/build/bundle.js"}]}}

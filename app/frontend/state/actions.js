@@ -12,7 +12,6 @@ module.exports = {
   fetchAlbum: id => d => {
     d({type: 'REQUEST_API'})
     return api.album.get(id)
-      .then( r => r.data)
       .then( data => d({type: 'RECEIVE_ALBUM', data: data}))
       .catch((error) => {
         console.error(error)
@@ -24,7 +23,6 @@ module.exports = {
   listAlbums: () => d => {
     d({type: 'REQUEST_API'})
     return api.album.list()
-      .then( r => r.data)
       .then( data => d({type: 'RECEIVE_ALBUMS', data: data}))
       .catch((error) => {
         console.error(error)

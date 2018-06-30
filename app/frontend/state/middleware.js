@@ -11,7 +11,7 @@ const uploader = store => {
     const pendingImage = pendingImages[0]
     store.dispatch({type: 'START_UPLOAD', imageName: pendingImage.name})
     api.image.upload(pendingImage)
-    .then(data => {
+    .then(() => {
       store.dispatch({type: 'SUCEESS_UPLOAD', imageName: pendingImage.name})
       store.dispatch({type: 'CONTINUE_UPLOAD', imageName: pendingImage.name})
     })

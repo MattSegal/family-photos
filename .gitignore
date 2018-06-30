@@ -10,3 +10,4 @@ secrets.json
 *.pid
 .env
 *.db
+webpack-stats.json
