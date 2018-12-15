@@ -34,9 +34,6 @@ services:
     web:
         image: localhost:5000/photos
         command: make web-local
-        build:
-            context: .
-            dockerfile: Dockerfile
         ports:
             - 8000:8000
         volumes:
@@ -63,9 +60,6 @@ services:
     webpack:
         image: localhost:5000/photos
         command: make webpack
-        build:
-            context: .
-            dockerfile: Dockerfile
         volumes:
             - ./app:/app
             - node_modules:/app/node_modules

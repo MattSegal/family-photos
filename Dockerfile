@@ -56,7 +56,7 @@ ADD app /app
 
 
 # Run frontend build
-RUN npm run prod
+RUN yarn prod
 
 ARG DJANGO_SETTINGS_MODULE=photos.settings.prod
 ARG DJANGO_SECRET_KEY=not-a-secret
