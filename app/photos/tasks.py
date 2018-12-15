@@ -2,7 +2,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 
-from photos.images import thumbnail
+from photos.images import thumbnail, optimize
 
 logging = get_task_logger(__name__)
 
@@ -42,8 +42,14 @@ def upload_photo_to_s3(photo_pk):
     photo.local_file.delete()
 
     logging.info('Finished processing Photo[%s]', photo_pk)
+    logging.info('Dispatching post-processing for Photo[%s]', photo_pk)
     if not photo.thumbnailed_at:
         thumbnail_photo.delay(photo.pk)
+
+    if not photo.optimized_at:
+        optimize_photo.delay(photo.pk)
+
+    logging.info('Finished dispatching post-processing for Photo[%s]', photo_pk)
 
 
 @shared_task
@@ -58,7 +64,23 @@ def thumbnail_photo(photo_pk):
     logging.info('Fetched Photo[%s] as %s', photo_pk, photo)
     if photo.thumbnailed_at:
         logging.info('Photo[%s] is already thumbnailed', photo_pk)
-        return
+    else:
+        thumbnail(photo)
+        logging.info('Finished thumbnailing a Photo[%s]', photo_pk)
 
-    thumbnail(photo)
-    logging.info('Finished thumbnailing a Photo[%s]', photo_pk)
+
+@shared_task
+def optimize_photo(photo_pk):
+    """
+    Given a photo that has been uploaded to S3,
+    create an optimized version and upload it to S3
+    """
+    logging.info('Optimizing a Photo[%s]', photo_pk)
+    from photos.models import Photo
+    photo = Photo.objects.get(pk=photo_pk)
+    logging.info('Fetched Photo[%s] as %s', photo_pk, photo)
+    if photo.optimized_at:
+        logging.info('Photo[%s] is already optimized', photo_pk)
+    else:
+        optimize(photo)
+        logging.info('Finished optimizing Photo[%s]', photo_pk)

@@ -84,6 +84,25 @@ def thumbnail(photo):
     photo.save()
 
 
+def optimize(photo):
+    """
+    Optimize an original photo and upload the result back to S3
+    """
+    log.info('Optimizing Photo[%s] with file %s', photo.pk, photo.file.name)
+    storage = photo.file.storage
+    bucket = storage.bucket
+    with storage.open(photo.file.name, 'rb') as img_file:
+        optimized_file = optimize_image(img_file)
+
+    upload_config = {'ContentType': 'image/jpeg'}
+    key = photo.get_optimized_key()
+    log.info('Uploading %s', key)
+    bucket.upload_fileobj(optimized_file, key, upload_config)
+    log.info('Finished uploading %s', key)
+    photo.optimized_at = timezone.now()
+    photo.save()
+
+
 def set_image_size(img_file, width, height):
     """
     Resizes the image so that it fills a box of width x height
@@ -137,6 +156,18 @@ def set_image_height(img_file, height):
     img.save(img_bytes, format='JPEG', optimize=True)
     img_bytes.seek(0)
     return img_bytes, img.width
+
+
+def optimize_image(img_file):
+    """
+    Optimize a JPEG file.
+    Returns the optimized image as an in-memory file object.
+    """
+    img = Image.open(img_file)
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='JPEG', optimize=True)
+    img_bytes.seek(0)
+    return img_bytes
 
 
 def ensure_image_upright(img):

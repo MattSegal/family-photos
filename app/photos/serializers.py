@@ -13,15 +13,15 @@ class PhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = ('id', 'thumb_url', 'display_url', 'taken_at')
 
-    def get_thumb_url(self, obj):
+    def get_thumb_url(self, photo):
         try:
-            return obj.file.url.replace('/original/', '/thumbnail/')
+            return photo.file.url.replace('/original/', '/thumbnail/')
         except AttributeError:
             return ''
 
-    def get_display_url(self, obj):
+    def get_display_url(self, photo):
         try:
-            return obj.file.url.replace('/original/', '/display/')
+            return photo.file.url.replace('/original/', '/display/')
         except AttributeError:
             return ''
 
@@ -37,12 +37,12 @@ class AlbumListSerializer(serializers.ModelSerializer):
         model = Album
         fields = ('id', 'name', 'slug', 'photos', 'num_photos')
 
-    def get_photos(self, obj):
+    def get_photos(self, album):
         # Is this an inefficient query? Can we do better?
-        return PhotoSerializer(obj.thumbnailed_photos()[:4], many=True).data
+        return PhotoSerializer(album.thumbnailed_photos()[:4], many=True).data
 
-    def get_num_photos(self, obj):
-        return obj.thumbnailed_photos().count()
+    def get_num_photos(self, album):
+        return album.thumbnailed_photos().count()
 
 class AlbumSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
@@ -56,9 +56,9 @@ class AlbumSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'slug', 'photos', 'num_photos')
         list_serializer_class = AlbumListSerializer
 
-    def get_photos(self, obj):
+    def get_photos(self, album):
         # Is this an inefficient query? Can we do better?
-        return PhotoSerializer(obj.thumbnailed_photos(), many=True).data
+        return PhotoSerializer(album.thumbnailed_photos(), many=True).data
 
-    def get_num_photos(self, obj):
-        return obj.thumbnailed_photos().count()
+    def get_num_photos(self, album):
+        return album.thumbnailed_photos().count()

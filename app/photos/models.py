@@ -37,9 +37,12 @@ class Photo(models.Model):
     uploaded_at = models.DateTimeField(null=True, blank=True)
     # When the image was thumbnailed
     thumbnailed_at = models.DateTimeField(null=True, blank=True)
+    # When the image was optimized
+    optimized_at = models.DateTimeField(null=True, blank=True)
     # When the image was taken
     taken_at = models.DateTimeField(null=True, blank=True)
     album = models.ForeignKey(Album, null=True, on_delete=models.SET_NULL)
+
     # File uploaded to S3
     file = models.ImageField(
         upload_to=get_s3_key,
@@ -83,6 +86,9 @@ class Photo(models.Model):
 
     def get_original_key(self, filename):
         return 'original/{}'.format(filename)
+
+    def get_optimized_key(self):
+        return self.file.name.replace('original/', 'optimized/')
 
     def get_thumb_key(self):
         return self.file.name.replace('original/', 'thumbnail/')
