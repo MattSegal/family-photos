@@ -1,4 +1,6 @@
-from celery import shared_task
+import os
+
+from celery import shared_task, chord
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 
@@ -84,3 +86,32 @@ def optimize_photo(photo_pk):
     else:
         optimize(photo)
         logging.info('Finished optimizing Photo[%s]', photo_pk)
+
+
+def get_download_dir(album):
+    return f'/downloads/{album.slug}/'
+
+@shared_task
+def prepare_album_download(album_pk):
+    """
+    Prepare a ZIP file of all photos in an album,
+    which a user can download from S3.
+    """
+    from photos.models import Album
+    album = Album.objects.get(pk=album_pk)
+
+    download_dir = get_download_dir(album)
+    os.makedirs(download_dir, exists_ok=True)
+    for photo in album.photo_set.all():
+        if True:
+            pass
+
+
+@shared_task
+def prepare_photo_download(photo_pk, download_dir):
+    """
+    Fetch a photo from S3 to the local filesystem,
+    so that it can be zipped up.
+    TODO - retry 3 times
+    """
+    pass
