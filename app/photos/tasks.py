@@ -88,30 +88,60 @@ def optimize_photo(photo_pk):
         logging.info('Finished optimizing Photo[%s]', photo_pk)
 
 
-def get_download_dir(album):
-    return f'/downloads/{album.slug}/'
+# from photos.tasks import prepare_album_download
+# prepare_album_download(Album.objects.last().pk)
 
 @shared_task
 def prepare_album_download(album_pk):
     """
     Prepare a ZIP file of all photos in an album,
     which a user can download from S3.
+    TODO - create album download object
     """
     from photos.models import Album
     album = Album.objects.get(pk=album_pk)
 
-    download_dir = get_download_dir(album)
-    os.makedirs(download_dir, exists_ok=True)
+    download_dir = f'/photos/download/{album.slug}/'
+    os.makedirs(download_dir, exist_ok=True)
+    download_tasks = []
     for photo in album.photo_set.all():
-        if True:
-            pass
+        download_tasks.append(prepare_photo_download.si(photo.pk, download_dir))
+
+    # Download all photos, then package album download
+    next_tasks = chord(download_tasks, package_album_download.si(album_pk, download_dir))
+    next_tasks()
 
 
 @shared_task
-def prepare_photo_download(photo_pk, download_dir):
+def package_album_download(album_pk):
     """
-    Fetch a photo from S3 to the local filesystem,
-    so that it can be zipped up.
-    TODO - retry 3 times
+    - Create ZIP file
+    - Upload ZIP file
+    - Clean up local files
+    - Update album download
     """
     pass
+
+
+@shared_task(bind=True)
+def prepare_photo_download(self, photo_pk, download_dir):
+    """
+    Fetch a photo from S3 to the local filesystem, so that it can be zipped up.
+    """
+    from photos.models import Photo
+    photo = Photo.objects.get(pk=photo_pk)
+    storage = photo.file.storage
+    source_file = photo.file.name
+    filename = source_file.split('/')[-1]
+    target_file = f'{download_dir}{filename}'
+    if os.path.exists(target_file):
+        logging.info(f'Did not download Photo[{photo_pk}] - already exists')
+    else:
+        logging.info(f'Downloading Photo[{photo_pk}] for ZIP file.')
+        try:
+            with storage.open(source_file, 'rb') as s3_file:
+                with open(target_file, 'wb') as local_file:
+                    local_file.write(s3_file.read())
+        except Exception as e:
+            logging.exception(f'Failed to download Photo[{photo_pk}]')
+            raise self.retry(exc=e, countdown=20, max_retries=2)
