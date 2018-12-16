@@ -5,6 +5,8 @@ from django.conf import settings
 from photos.images import thumbnail
 
 celery_host = os.environ.get('CELERY_HOST')
-app = Celery('photos', broker='redis://{}:6379'.format(celery_host))
+broker_url = f'redis://{celery_host}:6379'
+app = Celery('photos', broker=broker_url)
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+app.conf.result_backend = broker_url

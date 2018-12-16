@@ -1,4 +1,5 @@
 import os
+import zipfile
 
 from celery import shared_task, chord
 from celery.utils.log import get_task_logger
@@ -96,11 +97,10 @@ def prepare_album_download(album_pk):
     """
     Prepare a ZIP file of all photos in an album,
     which a user can download from S3.
-    TODO - create album download object
     """
-    from photos.models import Album
+    from photos.models import Album, AlbumDownload
     album = Album.objects.get(pk=album_pk)
-
+    AlbumDownload.objects.get_or_create(album=album)
     download_dir = f'/photos/download/{album.slug}/'
     os.makedirs(download_dir, exist_ok=True)
     download_tasks = []
@@ -113,14 +113,38 @@ def prepare_album_download(album_pk):
 
 
 @shared_task
-def package_album_download(album_pk):
+def package_album_download(album_pk, download_dir):
     """
-    - Create ZIP file
-    - Upload ZIP file
-    - Clean up local files
-    - Update album download
+    Packages album files into a ZIP and uploads it to S3
     """
-    pass
+    from photos.models import Album, AlbumDownload
+    album = Album.objects.get(pk=album_pk)
+    download = AlbumDownload.objects.get(album=album)
+    file_paths = [f'{download_dir}{fn}' for fn in os.listdir(download_dir)]
+    zip_path = f'{download_dir}{album.slug}.zip'
+    with zipfile.ZipFile(zip_path, 'w') as zf:
+        for file_path in file_paths:
+            zf.write(file_path)
+
+    storage = download.file.storage
+    bucket = storage.bucket
+    upload_config = {
+        'ContentType': 'application/x-zip-compressed',
+        'ACL': 'public-read'
+    }
+    key = f'zip/{album.slug}.zip'
+    log.info('Uploading %s', key)
+    with open(zip_path, 'rb') as zf:
+        bucket.upload_fileobj(zf, key, upload_config)
+
+    log.info('Finished uploading %s', key)
+
+    # Clean up local files
+    # TODO
+
+    # Update album download
+    # download.uploaded_at = timezone.now()
+    # download.save()
 
 
 @shared_task(bind=True)
@@ -131,7 +155,7 @@ def prepare_photo_download(self, photo_pk, download_dir):
     from photos.models import Photo
     photo = Photo.objects.get(pk=photo_pk)
     storage = photo.file.storage
-    source_file = photo.file.name
+    source_file = photo.file.name.replace('original', 'optimized')
     filename = source_file.split('/')[-1]
     target_file = f'{download_dir}{filename}'
     if os.path.exists(target_file):
