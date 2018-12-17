@@ -29,6 +29,26 @@ class Album(models.Model):
         return self.name
 
 
+def get_download_filename(f):
+    return f'downloads/{filename}'
+
+
+class AlbumDownload(models.Model):
+    # Time when user created a download request
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Time when the ZIP file was uploaded to S3
+    uploaded_at = models.DateTimeField(null=True, blank=True)
+    album = models.ForeignKey(Album, null=True, on_delete=models.CASCADE)
+    file = models.FileField(
+        upload_to=get_download_filename,
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.album.name
+
+
 class Photo(models.Model):
     title = models.CharField(max_length=255)
     # When the Photo was created
