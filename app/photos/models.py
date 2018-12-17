@@ -38,14 +38,15 @@ class AlbumDownload(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # Time when the ZIP file was uploaded to S3
     uploaded_at = models.DateTimeField(null=True, blank=True)
-    # Number of times the ZIP was downloaded
-    count_downloads = models.IntegerField(default=0)
     album = models.ForeignKey(Album, null=True, on_delete=models.CASCADE)
     file = models.FileField(
         upload_to=get_download_filename,
         null=True,
         blank=True
     )
+
+    def __str__(self):
+        return self.album.name
 
 
 class Photo(models.Model):
