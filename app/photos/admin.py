@@ -3,7 +3,7 @@ from django.contrib.messages import constants as messages
 from django.utils.html import format_html
 
 from photos.models import Photo, Album, AlbumDownload
-from photos.tasks import thumbnail_photo, prepare_album_download
+from photos.tasks import thumbnail_photo, prepare_album_download, optimize_photo, upload_photo_to_s3
 
 
 
@@ -21,7 +21,7 @@ class Photo(admin.ModelAdmin):
         'image_tag_list',
 
     )
-    actions = ['thumbnail']
+    actions = ['thumbnail', 'optimize', 'upload_local']
 
     readonly_fields = (
         'image_tag',
@@ -36,6 +36,22 @@ class Photo(admin.ModelAdmin):
         self.message_user(request, 'Thumbnailing tasks dispatched.', level=messages.INFO)
 
     thumbnail.short_description = 'Thumbnail photos'
+
+    def optimize(self, request, queryset):
+        for photo in queryset:
+            optimize_photo.delay(photo.pk)
+
+        self.message_user(request, 'Optimization tasks dispatched.', level=messages.INFO)
+
+    optimize.short_description = 'Optimize photos'
+
+    def upload_local(self, request, queryset):
+        for photo in queryset:
+            upload_photo_to_s3.delay(photo.pk)
+
+        self.message_user(request, 'Upload tasks dispatched.', level=messages.INFO)
+
+    upload_local.short_description = 'Upload local photos'
 
     def image_tag_list(self, photo):
         url = photo.file.url.replace('original', 'thumbnail') if photo.file else '#'

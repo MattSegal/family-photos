@@ -34,9 +34,10 @@ def upload_photo_to_s3(photo_pk):
     s3_key = photo.get_original_key(photo.local_file.name)
     s3_storage = photo.file.storage
     fs_storage = photo.local_file.storage
+    upload_config = {'ContentType': 'image/jpeg'}
+    bucket = s3_storage.bucket
     with fs_storage.open(photo.local_file.name, 'rb') as f:
-        with s3_storage.open(s3_key, 'wb') as s3_f:
-            s3_f.write(f.read())
+        bucket.upload_fileobj(f, s3_key, upload_config)
 
     photo.file.name = s3_key
     photo.uploaded_at = timezone.now()
@@ -88,7 +89,6 @@ def optimize_photo(photo_pk):
     else:
         optimize(photo)
         log.info('Finished optimizing Photo[%s]', photo_pk)
-
 
 
 @shared_task
