@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from PIL import Image, ExifTags
 
+
 ORIENTATION_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == 'Orientation')
 DATETIME_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == 'DateTime')
 
@@ -78,10 +79,13 @@ def thumbnail(photo):
     log.info('Uploading %s', key)
     bucket.upload_fileobj(disp_file, key, upload_config)
     log.info('Finished uploading %s', key)
-
-    photo.taken_at = taken_time
-    photo.thumbnailed_at = timezone.now()
-    photo.save()
+    # Update photo - don't save the whole model,
+    # it may cause race condition with other parallel tasks.
+    from .models import Photo
+    Photo.objects.filter(pk=photo.pk).update(
+        thumbnailed_at=timezone.now(),
+        taken_at=taken_time,
+    )
 
 
 def optimize(photo):
@@ -99,8 +103,10 @@ def optimize(photo):
     log.info('Uploading %s', key)
     bucket.upload_fileobj(optimized_file, key, upload_config)
     log.info('Finished uploading %s', key)
-    photo.optimized_at = timezone.now()
-    photo.save()
+    # Update photo - don't save the whole model,
+    # it may cause race condition with other parallel tasks.
+    from .models import Photo
+    Photo.objects.filter(pk=photo.pk).update(optimized_at=timezone.now())
 
 
 def set_image_size(img_file, width, height):
