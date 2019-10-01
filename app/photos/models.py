@@ -22,7 +22,7 @@ class Album(models.Model):
                 Q(file__isnull=True) |
                 Q(thumbnailed_at__isnull=True)
             )
-            .order_by('taken_at')
+            .order_by('-taken_at')
         )
 
     def __str__(self):
