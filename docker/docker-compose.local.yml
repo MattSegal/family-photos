@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  # Postgres database
+  database:
+    image: postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Django-Q worker
+  worker:
+    image: photos:latest
+    command: /app/scripts/worker/dev.sh
+    volumes:
+      - ../app:/app
+      - local-photos:/photos/
+    links:
+      - database
+    environment:
+      PGDATABASE: postgres
+      PGUSER: postgres
+      PGPASSWORD: password
+      PGHOST: database
+      PGPORT: 5432
+      DJANGO_SETTINGS_MODULE: photos.settings.dev
+      # Read from .env
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  web:
+    image: photos:latest
+    command: /app/scripts/web/dev.sh
+    ports:
+      - 8000:8000
+    volumes:
+      - ../app:/app
+      - local-photos:/photos/
+    links:
+      - database
+      - worker
+    environment:
+      PGDATABASE: postgres
+      PGUSER: postgres
+      PGPASSWORD: password
+      PGHOST: database
+      PGPORT: 5432
+      DJANGO_SETTINGS_MODULE: photos.settings.dev
+      # Read from .env
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+volumes:
+  local-photos:
+  postgres-data:

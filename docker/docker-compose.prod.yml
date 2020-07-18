@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  # Django Q worker
+  worker:
+    image: photos:latest
+    command: /app/scripts/worker/prod.sh
+    volumes:
+      - local-photos:/photos/
+    environment:
+      - DJANGO_SETTINGS_MODULE=photos.settings.prod
+      # Postgres
+      - PGHOST=$HOST
+      - PGPORT=5432
+      - PGDATABASE=photos
+      - PGUSER=$PHOTOS_DB_USER
+      - PGPASSWORD=$PHOTOS_DB_PASSWORD
+      # Pass-through
+      - RAVEN_DSN=$PHOTOS_RAVEN_DSN
+      - DJANGO_SECRET_KEY
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+
+  # Django web
+  web:
+    image: photos:latest
+    command: /app/scripts/web/prod.sh
+    ports:
+      - 8000:8000
+    volumes:
+      - local-photos:/photos/
+    environment:
+      - DJANGO_SETTINGS_MODULE=photos.settings.prod
+      # Postgres
+      - PGHOST=$HOST
+      - PGPORT=5432
+      - PGDATABASE=photos
+      - PGUSER=$PHOTOS_DB_USER
+      - PGPASSWORD=$PHOTOS_DB_PASSWORD
+      # Pass-through
+      - RAVEN_DSN=$PHOTOS_RAVEN_DSN
+      - DJANGO_SECRET_KEY
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+
+volumes:
+  local-photos:

@@ -1,17 +1,20 @@
 # Backend
 django
-psycopg2-binary
-boto3
-Pillow
-celery[redis]
-raven
-gunicorn
-django-storages
 djangorestframework
+
+# Infra
+psycopg2-binary
+gunicorn
+sentry-sdk
+django-q
+django-storages
+boto3
+
+# Images
+Pillow
 
 # Frontend
 whitenoise
-django-webpack-loader
 
 # Admin
 django-extensions
@@ -21,4 +24,4 @@ ipython
 django-debug-toolbar
 flake8
 isort
-watchdog
+watchdog[watchmedo]

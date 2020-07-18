@@ -9,8 +9,8 @@ from django.utils import timezone
 from PIL import Image, ExifTags
 
 
-ORIENTATION_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == 'Orientation')
-DATETIME_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == 'DateTime')
+ORIENTATION_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == "Orientation")
+DATETIME_CODE = next(k for k in ExifTags.TAGS.keys() if ExifTags.TAGS[k] == "DateTime")
 
 log = logging.getLogger(__name__)
 
@@ -50,62 +50,55 @@ def thumbnail(photo):
     """
     Thumbnail photo and upload it to S3
     """
-    log.info('Resizing Photo[%s] with file %s', photo.pk, photo.file.name)
+    log.info("Resizing Photo[%s] with file %s", photo.pk, photo.file.name)
     storage = photo.file.storage
     bucket = storage.bucket
 
-    with storage.open(photo.file.name, 'rb') as img_file:
+    with storage.open(photo.file.name, "rb") as img_file:
         # Thumbnail the image and upload to S3
         taken_time = get_image_taken_time(img_file)
-        thumb_file = set_image_size(img_file,
-            width=settings.THUMBNAIL_WIDTH,
-            height=settings.THUMBNAIL_HEIGHT
+        thumb_file = set_image_size(
+            img_file, width=settings.THUMBNAIL_WIDTH, height=settings.THUMBNAIL_HEIGHT
         )
-        disp_file, _ = set_image_height(img_file,
-            height=settings.DISPLAY_HEIGHT
-        )
+        disp_file, _ = set_image_height(img_file, height=settings.DISPLAY_HEIGHT)
 
-    upload_config = {
-        'ContentType': 'image/jpeg',
-        'ACL': 'public-read'
-    }
+    upload_config = {"ContentType": "image/jpeg", "ACL": "public-read"}
 
     key = photo.get_thumb_key()
-    log.info('Uploading %s', key)
+    log.info("Uploading %s", key)
     bucket.upload_fileobj(thumb_file, key, upload_config)
-    log.info('Finished uploading %s', key)
+    log.info("Finished uploading %s", key)
 
     key = photo.get_display_key()
-    log.info('Uploading %s', key)
+    log.info("Uploading %s", key)
     bucket.upload_fileobj(disp_file, key, upload_config)
-    log.info('Finished uploading %s', key)
+    log.info("Finished uploading %s", key)
     # Update photo - don't save the whole model,
     # it may cause race condition with other parallel tasks.
     from .models import Photo
-    Photo.objects.filter(pk=photo.pk).update(
-        thumbnailed_at=timezone.now(),
-        taken_at=taken_time,
-    )
+
+    Photo.objects.filter(pk=photo.pk).update(thumbnailed_at=timezone.now(), taken_at=taken_time)
 
 
 def optimize(photo):
     """
     Optimize an original photo and upload the result back to S3
     """
-    log.info('Optimizing Photo[%s] with file %s', photo.pk, photo.file.name)
+    log.info("Optimizing Photo[%s] with file %s", photo.pk, photo.file.name)
     storage = photo.file.storage
     bucket = storage.bucket
-    with storage.open(photo.file.name, 'rb') as img_file:
+    with storage.open(photo.file.name, "rb") as img_file:
         optimized_file = optimize_image(img_file)
 
-    upload_config = {'ContentType': 'image/jpeg'}
+    upload_config = {"ContentType": "image/jpeg"}
     key = photo.get_optimized_key()
-    log.info('Uploading %s', key)
+    log.info("Uploading %s", key)
     bucket.upload_fileobj(optimized_file, key, upload_config)
-    log.info('Finished uploading %s', key)
+    log.info("Finished uploading %s", key)
     # Update photo - don't save the whole model,
     # it may cause race condition with other parallel tasks.
     from .models import Photo
+
     Photo.objects.filter(pk=photo.pk).update(optimized_at=timezone.now())
 
 
@@ -123,26 +116,25 @@ def set_image_size(img_file, width, height):
     if crop_aspect_ratio > original_aspect_ratio:
         # Crop height of image to fit new AR
         new_height = img.width / crop_aspect_ratio
-        img = img.crop((
-            # left, upper, right, lower
-            0,
-            0.5 * img.height - 0.5 * new_height,
-            img.width,
-            0.5 * img.height + 0.5 * new_height
-        ))
+        img = img.crop(
+            (
+                # left, upper, right, lower
+                0,
+                0.5 * img.height - 0.5 * new_height,
+                img.width,
+                0.5 * img.height + 0.5 * new_height,
+            )
+        )
     else:
         # Crop width of image to fit new AR
         new_width = img.height * crop_aspect_ratio
-        img = img.crop((
-            0.5 * img.width - 0.5 * new_width,
-            0,
-            0.5 * img.width + 0.5 * new_width,
-            img.height
-        ))
+        img = img.crop(
+            (0.5 * img.width - 0.5 * new_width, 0, 0.5 * img.width + 0.5 * new_width, img.height)
+        )
 
     img.thumbnail((width, height), Image.ANTIALIAS)
     img_bytes = BytesIO()
-    img.save(img_bytes, format='JPEG', optimize=True)
+    img.save(img_bytes, format="JPEG", optimize=True)
     img_bytes.seek(0)
     return img_bytes
 
@@ -157,9 +149,12 @@ def set_image_height(img_file, height):
     """
     img = Image.open(img_file)
     img = ensure_image_upright(img)
-    img.thumbnail((float("inf"), height), Image.ANTIALIAS)
+    aspect_ratio = float(img.width) / img.height
+    new_width = height * aspect_ratio
+    size = (new_width, height)
+    img.thumbnail(size, Image.ANTIALIAS)
     img_bytes = BytesIO()
-    img.save(img_bytes, format='JPEG', optimize=True)
+    img.save(img_bytes, format="JPEG", optimize=True)
     img_bytes.seek(0)
     return img_bytes, img.width
 
@@ -171,7 +166,7 @@ def optimize_image(img_file):
     """
     img = Image.open(img_file)
     img_bytes = BytesIO()
-    img.save(img_bytes, format='JPEG', optimize=True)
+    img.save(img_bytes, format="JPEG", optimize=True)
     img_bytes.seek(0)
     return img_bytes
 
@@ -206,11 +201,12 @@ def get_image_taken_time(img_file):
     img = Image.open(img_file)
     exif = img._getexif()
     if not exif:
-        datetime_str = '2100:01:01 01:01:01'
+        datetime_str = "2100:01:01 01:01:01"
     else:
         exif = dict(exif.items())
         datetime_str = exif.get(DATETIME_CODE)
         if not datetime_str:
-            datetime_str = '2100:01:01 01:01:01'
+            datetime_str = "2100:01:01 01:01:01"
 
-    return datetime.strptime(datetime_str, '%Y:%m:%d %H:%M:%S')
+    return datetime.strptime(datetime_str, "%Y:%m:%d %H:%M:%S")
+

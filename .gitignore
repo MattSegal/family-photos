@@ -11,3 +11,6 @@ secrets.json
 .env
 *.db
 webpack-stats.json
+build/
+
+node_modules/

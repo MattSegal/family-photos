@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Build chain for photos web app",
   "scripts": {
-    "dev": "webpack --config /app/webpack.config.js --mode development --progress --watch",
-    "prod": "webpack --config ./webpack.config.js --mode production"
+    "dev": "webpack --config webpack.config.js --mode development --progress --watch",
+    "build": "webpack --config webpack.config.js --mode production"
   },
   "babel": {
     "presets": [
