@@ -17,7 +17,8 @@ ssh root@$HOST /bin/bash << EOF
     yarn build
     popd
     echo "Building Docker image for $REPO"
-    docker build -t links:latest -f docker/Dockerfile .
+    docker build -t $REPO:latest -f docker/Dockerfile .
     echo "Deploying $REPO to docker swarm"
+    export HOST="$HOST"
     docker stack deploy --compose-file docker/docker-compose.prod.yml $REPO
 EOF
