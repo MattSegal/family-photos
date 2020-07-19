@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to deploy.
 set -e
-export HOST='167.99.78.141'
+HOST='3.24.18.19'
 REPO="photos"
 ssh root@$HOST /bin/bash << EOF
     set -e
@@ -19,6 +19,5 @@ ssh root@$HOST /bin/bash << EOF
     echo "Building Docker image for $REPO"
     docker build -t $REPO:latest -f docker/Dockerfile .
     echo "Deploying $REPO to docker swarm"
-    export HOST="$HOST"
     docker stack deploy --compose-file docker/docker-compose.prod.yml $REPO
 EOF
