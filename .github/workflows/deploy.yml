@@ -1,0 +1,21 @@
+name: Deploy
+on:
+  - workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Checkout transcrypt
+        uses: actions/checkout@v2
+        with:
+          repository: elasticdog/transcrypt
+          path: transcrypt
+
+      - name: Initialise transcrypt
+        run: ./transcrypt/transcrypt -c aes-256-cbc -p '${{ secrets.TRANSCRYPT_PASSWORD }}' --yes
+
+      - name: Run deploy script
+        run: ./infra/deploy.sh
+        shell: bash

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to deploy.
 set -e
-HOST='13.54.177.105'
+HOST='167.179.136.207'
 REPO="photos"
 ssh root@$HOST /bin/bash << EOF
     set -e

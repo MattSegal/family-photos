@@ -18,16 +18,8 @@ services:
       - local-photos:/photos/
     links:
       - database
-    environment:
-      PGDATABASE: postgres
-      PGUSER: postgres
-      PGPASSWORD: password
-      PGHOST: database
-      PGPORT: 5432
-      DJANGO_SETTINGS_MODULE: photos.settings.dev
-      # Read from .env
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    env_file:
+      - ../env/.env.dev
   web:
     image: photos:latest
     command: /app/scripts/web/dev.sh
@@ -39,16 +31,8 @@ services:
     links:
       - database
       - worker
-    environment:
-      PGDATABASE: postgres
-      PGUSER: postgres
-      PGPASSWORD: password
-      PGHOST: database
-      PGPORT: 5432
-      DJANGO_SETTINGS_MODULE: photos.settings.dev
-      # Read from .env
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    env_file:
+      - ../env/.env.dev
 
 volumes:
   local-photos:
