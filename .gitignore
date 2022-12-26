@@ -1,5 +1,3 @@
-env/
-.env/
 *.pyc
 secrets.json
 *.sqlite3
