@@ -88,7 +88,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = "/static/"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATICFILES_DIRS = ("/app/photos/static/", "/app/build/")
+STATICFILES_DIRS = ("/app/photos/static/", "/build/")
 
 
 # Media storage
