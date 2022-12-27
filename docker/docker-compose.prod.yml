@@ -9,19 +9,8 @@ services:
       - local-photos:/photos/
       - /var/run/postgresql:/app/postgres.sock
 
-    environment:
-      DJANGO_SETTINGS_MODULE: photos.settings.prod
-      # Postgres
-      PGHOST: /app/postgres.sock
-      PGPORT: 5432
-      PGDATABASE: photos
-      PGUSER: $PHOTOS_DB_USER
-      PGPASSWORD: $PHOTOS_DB_PASSWORD
-      # Pass-through
-      RAVEN_DSN: $PHOTOS_RAVEN_DSN
-      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    env_file:
+      - .env.prod
 
   # Django web
   web:
@@ -32,19 +21,7 @@ services:
     volumes:
       - local-photos:/photos/
       - /var/run/postgresql:/app/postgres.sock
-    environment:
-      DJANGO_SETTINGS_MODULE: photos.settings.prod
-      # Postgres
-      PGHOST: /app/postgres.sock
-      PGPORT: 5432
-      PGDATABASE: photos
-      PGUSER: $PHOTOS_DB_USER
-      PGPASSWORD: $PHOTOS_DB_PASSWORD
-      # Pass-through
-      RAVEN_DSN: $PHOTOS_RAVEN_DSN
-      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-
+    env_file:
+      - .env.prod
 volumes:
   local-photos:
